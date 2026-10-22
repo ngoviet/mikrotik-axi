@@ -11,7 +11,8 @@ export type ErrorCode =
   | "NOT_ROUTEROS"
   | "IDENTITY_MISMATCH"
   | "ROS_ERROR"
-  | "WRITE_REFUSED";
+  | "WRITE_REFUSED"
+  | "SETUP_FAILED";
 
 export function axiError(message: string, code: ErrorCode, help: string[] = []): AxiError {
   return new AxiError(message, code, help);

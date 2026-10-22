@@ -1,7 +1,9 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { sessionStartHookStatus } from "axi-sdk-js";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { HOOK_MARKER } from "../src/commands/setup.js";
 import { inHookDirs, runHook } from "../src/hook.js";
 import { TransportError, type Transport } from "../src/ros/transport.js";
 import { fakeRouter, loadDataset } from "./helpers/fake-router.js";
@@ -146,7 +148,32 @@ describe("setup hooks", { timeout: 15000 }, () => {
   it("--remove removes only our entry", async () => {
     await setup([]);
     const removed = await setup(["--remove"]);
+    expect(removed.code).toBe(0);
+    expect(removed.out).toMatch(/^setup: hooks removed$/m);
     expect(removed.out).toMatch(/^claude: "?not installed/m);
+  });
+
+  it("install that could not write a config fails (no false success)", async () => {
+    // settings.json là thư mục ⇒ SDK báo lỗi qua onError rồi vẫn trả về bình thường.
+    mkdirSync(join(dir, "home", ".claude", "settings.json"), { recursive: true });
+    const r = await setup([]);
+    expect(r.code).toBe(1);
+    expect(r.out).toMatch(/^code: SETUP_FAILED$/m);
+    expect(r.out).toContain("install incomplete (not installed: claude)");
+    expect(r.out).toContain("settings.json");
+    expect(r.out).not.toContain("hooks installed");
+  });
+
+  it("--remove that leaves something behind fails", async () => {
+    await setup([]);
+    // Plugin OpenCode mất dấu marker ⇒ SDK từ chối xoá file người dùng (onError).
+    const { opencode } = sessionStartHookStatus({ marker: HOOK_MARKER, execPath: hookBin, scope: "user", homeDir: join(dir, "home") });
+    writeFileSync(opencode.path, "// user's own plugin\n");
+    const r = await setup(["--remove"]);
+    expect(r.code).toBe(1);
+    expect(r.out).toMatch(/^code: SETUP_FAILED$/m);
+    expect(r.out).toContain("remove incomplete");
+    expect(r.out).toContain("refusing to remove unmanaged OpenCode plugin");
   });
 
   it("on Windows refuses to install a raw .js path (agents cannot execute it)", async () => {

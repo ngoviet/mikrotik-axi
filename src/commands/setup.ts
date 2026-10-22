@@ -9,7 +9,7 @@ import {
 } from "axi-sdk-js";
 import { parseCommandArgs } from "../args.js";
 import type { Runtime } from "../context.js";
-import { fail } from "../errors.js";
+import { fail, redact } from "../errors.js";
 
 export const HOOK_MARKER = "mikrotik-axi";
 export const HOOK_BIN = "mikrotik-axi-hook";
@@ -56,7 +56,9 @@ export async function setupCommand(args: string[], rt: Runtime): Promise<Record<
   const errors: string[] = [];
   if (flags["remove"]) {
     uninstallSessionStartHooks({ ...base, onError: (m) => errors.push(m) });
-    return { ...statusOutput(sessionStartHookStatus(base)), ...(errors.length ? { errors } : {}) };
+    const status = sessionStartHookStatus(base);
+    failIfIncomplete("remove", errors, agentsWhere(status, true));
+    return { setup: "hooks removed", ...statusOutput(status) };
   }
 
   const command = resolvePortableHookCommand(execPath, [HOOK_BIN], HOOK_MARKER, pathContext(rt.env));
@@ -74,11 +76,12 @@ export async function setupCommand(args: string[], rt: Runtime): Promise<Record<
     shouldInstall: () => true,
     onError: (m) => errors.push(m),
   });
+  const status = sessionStartHookStatus(base);
+  failIfIncomplete("install", errors, agentsWhere(status, false));
   return {
     setup: "hooks installed or already up to date",
     command,
-    ...statusOutput(sessionStartHookStatus(base)),
-    ...(errors.length ? { errors } : {}),
+    ...statusOutput(status),
     help: [
       `Set MIKROTIK_AXI_HOOK_DIRS to the project dirs that should see router context (${delimiter}-separated)`,
       "Run `mikrotik-axi setup hooks --status` to verify",
@@ -86,7 +89,30 @@ export async function setupCommand(args: string[], rt: Runtime): Promise<Record<
   };
 }
 
-function statusOutput(s: ReturnType<typeof sessionStartHookStatus>): Record<string, unknown> {
+type HookStatus = ReturnType<typeof sessionStartHookStatus>;
+
+function agentsWhere(s: HookStatus, installed: boolean): string[] {
+  return (["claude", "codex", "opencode"] as const).filter((a) => s[a].installed === installed);
+}
+
+// SDK gom lỗi ghi qua onError rồi vẫn trả về bình thường ⇒ phải tự kiểm. Đọc lại trạng thái
+// bắt cả ca không có lỗi nào được báo mà hook vẫn không vào (hoặc vẫn còn sau --remove).
+// Báo thành công khi chưa xong = agent tin nhầm hook đang chạy (review catalog AXI, PR #252).
+function failIfIncomplete(action: "install" | "remove", errors: string[], wrong: string[]): void {
+  if (!errors.length && !wrong.length) return;
+  const what = action === "install" ? "not installed" : "still installed";
+  fail(
+    `setup hooks: ${action} incomplete${wrong.length ? ` (${what}: ${wrong.join(", ")})` : ""}`,
+    "SETUP_FAILED",
+    [
+      ...errors.map((e) => redact(e)),
+      "Check that the agent config files above are writable regular files",
+      "Run `mikrotik-axi setup hooks --status` to see what is installed",
+    ],
+  );
+}
+
+function statusOutput(s: HookStatus): Record<string, unknown> {
   return {
     scope: s.scope,
     claude: `${s.claude.installed ? "installed" : "not installed"} (${s.claude.path})`,
