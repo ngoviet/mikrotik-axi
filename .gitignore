@@ -1,0 +1,21 @@
+node_modules/
+dist/
+coverage/
+
+# Bí mật & dữ liệu local (CLAUDE.md §13)
+.env
+.env.*
+!.env.example
+profile.json
+profiles/*.json
+!profiles/example.json
+snapshots/
+exports/
+*.rsc
+test/fixtures/raw/
+build/
+*.local
+
+# File kiểm kê do công cụ khác ghi vào thư mục này — không thuộc repo
+_inventory.txt
+bench/raw/

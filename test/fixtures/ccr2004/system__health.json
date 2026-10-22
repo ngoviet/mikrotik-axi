@@ -1,0 +1,14 @@
+[
+  {
+    ".id": "*D",
+    "name": "cpu-temperature",
+    "type": "C",
+    "value": "47"
+  },
+  {
+    ".id": "*E",
+    "name": "fan1-speed",
+    "type": "RPM",
+    "value": "3120"
+  }
+]

@@ -1,0 +1,111 @@
+[
+  {
+    ".id": "*1",
+    "chain": "forward",
+    "action": "passthrough",
+    "comment": "special dummy rule to show fasttrack counters",
+    "packets": "812345",
+    "dynamic": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*36C",
+    "chain": "input",
+    "action": "accept",
+    "comment": "accept established,related",
+    "packets": "1203344",
+    "bytes": "1083009600",
+    "disabled": "false",
+    "dynamic": "false",
+    "connection-state": "established,related"
+  },
+  {
+    ".id": "*36D",
+    "chain": "input",
+    "action": "drop",
+    "comment": "drop invalid",
+    "packets": "301",
+    "bytes": "270900",
+    "disabled": "false",
+    "dynamic": "false",
+    "connection-state": "invalid"
+  },
+  {
+    ".id": "*36E",
+    "chain": "input",
+    "action": "accept",
+    "comment": "MGMT from vlan100",
+    "packets": "5512",
+    "bytes": "4960800",
+    "disabled": "false",
+    "dynamic": "false",
+    "in-interface": "vlan100"
+  },
+  {
+    ".id": "*36F",
+    "chain": "input",
+    "action": "drop",
+    "comment": "drop all else from WAN",
+    "packets": "88211",
+    "bytes": "79389900",
+    "disabled": "false",
+    "dynamic": "false",
+    "in-interface-list": "WAN_TOTAL"
+  },
+  {
+    ".id": "*370",
+    "chain": "forward",
+    "action": "fasttrack-connection",
+    "comment": "fasttrack",
+    "packets": "9123341",
+    "bytes": "8211006900",
+    "disabled": "false",
+    "dynamic": "false",
+    "connection-state": "established,related"
+  },
+  {
+    ".id": "*371",
+    "chain": "forward",
+    "action": "accept",
+    "comment": "accept established,related",
+    "packets": "9123341",
+    "bytes": "8211006900",
+    "disabled": "false",
+    "dynamic": "false",
+    "connection-state": "established,related"
+  },
+  {
+    ".id": "*372",
+    "chain": "forward",
+    "action": "drop",
+    "comment": "drop invalid",
+    "packets": "1201",
+    "bytes": "1080900",
+    "disabled": "false",
+    "dynamic": "false",
+    "connection-state": "invalid"
+  },
+  {
+    ".id": "*373",
+    "chain": "forward",
+    "action": "drop",
+    "comment": "ISOLATE_GUEST",
+    "packets": "0",
+    "bytes": "0",
+    "disabled": "true",
+    "dynamic": "false",
+    "in-interface": "vlan20"
+  },
+  {
+    ".id": "*374",
+    "chain": "forward",
+    "action": "drop",
+    "comment": "drop WAN not DSTNATed",
+    "packets": "4402",
+    "bytes": "3961800",
+    "disabled": "false",
+    "dynamic": "false",
+    "connection-nat-state": "!dstnat",
+    "in-interface-list": "WAN_TOTAL"
+  }
+]

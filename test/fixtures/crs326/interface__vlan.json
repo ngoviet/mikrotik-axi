@@ -1,0 +1,10 @@
+[
+  {
+    ".id": "*2C",
+    "name": "vlan100",
+    "interface": "bridge",
+    "vlan-id": "100",
+    "running": "true",
+    "disabled": "false"
+  }
+]

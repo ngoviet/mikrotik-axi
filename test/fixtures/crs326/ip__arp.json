@@ -1,0 +1,10 @@
+[
+  {
+    ".id": "*60",
+    "address": "192.168.100.1",
+    "mac-address": "02:00:00:00:01:01",
+    "interface": "vlan100",
+    "dynamic": "true",
+    "complete": "true"
+  }
+]

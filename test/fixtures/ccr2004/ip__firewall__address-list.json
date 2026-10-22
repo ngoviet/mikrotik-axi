@@ -1,0 +1,29 @@
+[
+  {
+    ".id": "*3B8",
+    "list": "MGMT",
+    "address": "192.168.100.50",
+    "disabled": "false",
+    "dynamic": "false",
+    "creation-time": "2026-09-26 12:00:00",
+    "comment": "admin-pc"
+  },
+  {
+    ".id": "*3B9",
+    "list": "HA_ALLOW",
+    "address": "192.168.100.10",
+    "disabled": "false",
+    "dynamic": "false",
+    "creation-time": "2026-09-26 12:00:00",
+    "comment": "HA_server"
+  },
+  {
+    ".id": "*3BA",
+    "list": "blocked",
+    "address": "203.0.113.66",
+    "disabled": "false",
+    "dynamic": "true",
+    "timeout": "23:59:00",
+    "creation-time": "2026-10-13 07:00:00"
+  }
+]

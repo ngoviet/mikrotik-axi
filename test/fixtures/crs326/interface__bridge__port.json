@@ -1,0 +1,194 @@
+[
+  {
+    ".id": "*46",
+    "interface": "ether2",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*47",
+    "interface": "ether3",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*48",
+    "interface": "ether4",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*49",
+    "interface": "ether5",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*4A",
+    "interface": "ether6",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*4B",
+    "interface": "ether7",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*4C",
+    "interface": "ether8",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*4D",
+    "interface": "ether9",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*4E",
+    "interface": "ether10",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*4F",
+    "interface": "ether11",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*50",
+    "interface": "ether12",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*51",
+    "interface": "ether13",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*52",
+    "interface": "ether14",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*53",
+    "interface": "ether15",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*54",
+    "interface": "ether16",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*55",
+    "interface": "ether17",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*56",
+    "interface": "ether18",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*57",
+    "interface": "ether19",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*58",
+    "interface": "ether20",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*59",
+    "interface": "ether21",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*5A",
+    "interface": "ether22",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*5B",
+    "interface": "ether23",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*5C",
+    "interface": "ether24",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*5D",
+    "interface": "sfp-sfpplus1",
+    "bridge": "bridge",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  }
+]

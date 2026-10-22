@@ -1,0 +1,10 @@
+{
+  "architecture-name": "arm64",
+  "board-name": "CCR2004-16G-2S+",
+  "cpu-count": "4",
+  "cpu-load": "6",
+  "free-memory": "3521900544",
+  "total-memory": "4294967296",
+  "uptime": "1w5d4h12m3s",
+  "version": "7.24.4 (stable)"
+}

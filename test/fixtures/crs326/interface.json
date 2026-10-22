@@ -1,0 +1,282 @@
+[
+  {
+    ".id": "*10",
+    "name": "ether1",
+    "type": "ether",
+    "running": "true",
+    "disabled": "false",
+    "rx-byte": "100000000",
+    "tx-byte": "90000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*11",
+    "name": "ether2",
+    "type": "ether",
+    "running": "true",
+    "disabled": "false",
+    "rx-byte": "200000000",
+    "tx-byte": "180000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*12",
+    "name": "ether3",
+    "type": "ether",
+    "running": "true",
+    "disabled": "false",
+    "rx-byte": "300000000",
+    "tx-byte": "270000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*13",
+    "name": "ether4",
+    "type": "ether",
+    "running": "true",
+    "disabled": "false",
+    "rx-byte": "400000000",
+    "tx-byte": "360000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*14",
+    "name": "ether5",
+    "type": "ether",
+    "running": "true",
+    "disabled": "false",
+    "rx-byte": "500000000",
+    "tx-byte": "450000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*15",
+    "name": "ether6",
+    "type": "ether",
+    "running": "true",
+    "disabled": "false",
+    "rx-byte": "600000000",
+    "tx-byte": "540000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*16",
+    "name": "ether7",
+    "type": "ether",
+    "running": "true",
+    "disabled": "false",
+    "rx-byte": "700000000",
+    "tx-byte": "630000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*17",
+    "name": "ether8",
+    "type": "ether",
+    "running": "true",
+    "disabled": "false",
+    "rx-byte": "800000000",
+    "tx-byte": "720000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*18",
+    "name": "ether9",
+    "type": "ether",
+    "running": "true",
+    "disabled": "false",
+    "rx-byte": "900000000",
+    "tx-byte": "810000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*19",
+    "name": "ether10",
+    "type": "ether",
+    "running": "true",
+    "disabled": "false",
+    "rx-byte": "1000000000",
+    "tx-byte": "900000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*1A",
+    "name": "ether11",
+    "type": "ether",
+    "running": "true",
+    "disabled": "false",
+    "rx-byte": "1100000000",
+    "tx-byte": "990000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*1B",
+    "name": "ether12",
+    "type": "ether",
+    "running": "true",
+    "disabled": "false",
+    "rx-byte": "1200000000",
+    "tx-byte": "1080000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*1C",
+    "name": "ether13",
+    "type": "ether",
+    "running": "false",
+    "disabled": "false",
+    "rx-byte": "1300000000",
+    "tx-byte": "1170000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*1D",
+    "name": "ether14",
+    "type": "ether",
+    "running": "false",
+    "disabled": "false",
+    "rx-byte": "1400000000",
+    "tx-byte": "1260000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*1E",
+    "name": "ether15",
+    "type": "ether",
+    "running": "false",
+    "disabled": "false",
+    "rx-byte": "1500000000",
+    "tx-byte": "1350000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*1F",
+    "name": "ether16",
+    "type": "ether",
+    "running": "false",
+    "disabled": "false",
+    "rx-byte": "1600000000",
+    "tx-byte": "1440000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*20",
+    "name": "ether17",
+    "type": "ether",
+    "running": "false",
+    "disabled": "false",
+    "rx-byte": "1700000000",
+    "tx-byte": "1530000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*21",
+    "name": "ether18",
+    "type": "ether",
+    "running": "false",
+    "disabled": "false",
+    "rx-byte": "1800000000",
+    "tx-byte": "1620000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*22",
+    "name": "ether19",
+    "type": "ether",
+    "running": "false",
+    "disabled": "false",
+    "rx-byte": "1900000000",
+    "tx-byte": "1710000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*23",
+    "name": "ether20",
+    "type": "ether",
+    "running": "false",
+    "disabled": "false",
+    "rx-byte": "2000000000",
+    "tx-byte": "1800000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*24",
+    "name": "ether21",
+    "type": "ether",
+    "running": "false",
+    "disabled": "false",
+    "rx-byte": "2100000000",
+    "tx-byte": "1890000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*25",
+    "name": "ether22",
+    "type": "ether",
+    "running": "false",
+    "disabled": "false",
+    "rx-byte": "2200000000",
+    "tx-byte": "1980000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*26",
+    "name": "ether23",
+    "type": "ether",
+    "running": "false",
+    "disabled": "false",
+    "rx-byte": "2300000000",
+    "tx-byte": "2070000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*27",
+    "name": "ether24",
+    "type": "ether",
+    "running": "false",
+    "disabled": "false",
+    "rx-byte": "2400000000",
+    "tx-byte": "2160000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*28",
+    "name": "sfp-sfpplus1",
+    "type": "ether",
+    "running": "true",
+    "disabled": "false",
+    "rx-byte": "5000000000",
+    "tx-byte": "4000000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*29",
+    "name": "sfp-sfpplus2",
+    "type": "ether",
+    "running": "false",
+    "disabled": "false",
+    "rx-byte": "5000000000",
+    "tx-byte": "4000000000",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*2A",
+    "name": "bridge",
+    "type": "bridge",
+    "running": "true",
+    "disabled": "false",
+    "rx-byte": "1",
+    "tx-byte": "1",
+    "link-downs": "0"
+  },
+  {
+    ".id": "*2B",
+    "name": "vlan100",
+    "type": "vlan",
+    "running": "true",
+    "disabled": "false",
+    "rx-byte": "1",
+    "tx-byte": "1",
+    "link-downs": "0"
+  }
+]

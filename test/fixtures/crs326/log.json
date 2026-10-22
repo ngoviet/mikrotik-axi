@@ -1,0 +1,14 @@
+[
+  {
+    ".id": "*6A",
+    "time": "2026-10-13 06:45:00",
+    "topics": "interface,info",
+    "message": "ether7 link down"
+  },
+  {
+    ".id": "*6B",
+    "time": "2026-10-13 06:45:09",
+    "topics": "interface,info",
+    "message": "ether7 link up (speed 1G, full duplex)"
+  }
+]

@@ -1,0 +1,92 @@
+[
+  {
+    ".id": "*3A4",
+    "name": "ether1",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3A5",
+    "name": "ether2",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3A6",
+    "name": "ether3",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3A7",
+    "name": "ether4",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3A8",
+    "name": "ether5",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3A9",
+    "name": "ether6",
+    "loop-protect": "on"
+  },
+  {
+    ".id": "*3AA",
+    "name": "ether7",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3AB",
+    "name": "ether8",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3AC",
+    "name": "ether9",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3AD",
+    "name": "ether10",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3AE",
+    "name": "ether11",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3AF",
+    "name": "ether12",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3B0",
+    "name": "ether13",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3B1",
+    "name": "ether14",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3B2",
+    "name": "ether15",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3B3",
+    "name": "ether16",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3B4",
+    "name": "sfp-sfpplus1",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3B5",
+    "name": "sfp-sfpplus2",
+    "loop-protect": "default"
+  }
+]

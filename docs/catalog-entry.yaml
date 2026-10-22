@@ -1,0 +1,9 @@
+# Bản nháp entry cho `community:` trong https://github.com/kunchenguid/axi/blob/main/catalog.yaml
+# Quy trình (CONTRIBUTING.md của repo AXI): thêm entry → `pnpm run docs:gen` → commit 3 file →
+# push qua no-mistakes (`no-mistakes init --fork-url …`, `git push no-mistakes`).
+# Phần `admission:` do maintainer AXI điền khi review — không tự viết.
+  - name: mikrotik-axi
+    url: https://github.com/ngoviet/mikrotik-axi
+    author: ngoviet
+    domain: Network devices
+    description: "Inspect MikroTik RouterOS v7 over REST - WAN/PPPoE per line, per-table default routes, DHCP, firewall order audits and alerts - with identity-guarded, dry-run-first writes and snapshot revert."

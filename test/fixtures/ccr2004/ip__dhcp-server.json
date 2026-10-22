@@ -1,0 +1,303 @@
+[
+  {
+    ".id": "*8C",
+    "name": "dhcp-vlan10",
+    "interface": "vlan10",
+    "address-pool": "pool-vlan10",
+    "disabled": "false"
+  },
+  {
+    ".id": "*90",
+    "name": "dhcp-vlan20",
+    "interface": "vlan20",
+    "address-pool": "pool-vlan20",
+    "disabled": "false"
+  },
+  {
+    ".id": "*94",
+    "name": "dhcp-vlan100",
+    "interface": "vlan100",
+    "address-pool": "pool-vlan100",
+    "disabled": "false"
+  },
+  {
+    ".id": "*98",
+    "name": "dhcp-vlan101",
+    "interface": "vlan101",
+    "address-pool": "pool-vlan101",
+    "disabled": "false"
+  },
+  {
+    ".id": "*9C",
+    "name": "dhcp-vlan102",
+    "interface": "vlan102",
+    "address-pool": "pool-vlan102",
+    "disabled": "false"
+  },
+  {
+    ".id": "*A0",
+    "name": "dhcp-vlan103",
+    "interface": "vlan103",
+    "address-pool": "pool-vlan103",
+    "disabled": "false"
+  },
+  {
+    ".id": "*A4",
+    "name": "dhcp-vlan104",
+    "interface": "vlan104",
+    "address-pool": "pool-vlan104",
+    "disabled": "false"
+  },
+  {
+    ".id": "*A8",
+    "name": "dhcp-vlan105",
+    "interface": "vlan105",
+    "address-pool": "pool-vlan105",
+    "disabled": "false"
+  },
+  {
+    ".id": "*AC",
+    "name": "dhcp-vlan106",
+    "interface": "vlan106",
+    "address-pool": "pool-vlan106",
+    "disabled": "false"
+  },
+  {
+    ".id": "*B0",
+    "name": "dhcp-vlan107",
+    "interface": "vlan107",
+    "address-pool": "pool-vlan107",
+    "disabled": "false"
+  },
+  {
+    ".id": "*B4",
+    "name": "dhcp-vlan108",
+    "interface": "vlan108",
+    "address-pool": "pool-vlan108",
+    "disabled": "false"
+  },
+  {
+    ".id": "*B8",
+    "name": "dhcp-vlan109",
+    "interface": "vlan109",
+    "address-pool": "pool-vlan109",
+    "disabled": "false"
+  },
+  {
+    ".id": "*BC",
+    "name": "dhcp-vlan110",
+    "interface": "vlan110",
+    "address-pool": "pool-vlan110",
+    "disabled": "false"
+  },
+  {
+    ".id": "*C0",
+    "name": "dhcp-vlan111",
+    "interface": "vlan111",
+    "address-pool": "pool-vlan111",
+    "disabled": "false"
+  },
+  {
+    ".id": "*C4",
+    "name": "dhcp-vlan112",
+    "interface": "vlan112",
+    "address-pool": "pool-vlan112",
+    "disabled": "false"
+  },
+  {
+    ".id": "*C8",
+    "name": "dhcp-vlan113",
+    "interface": "vlan113",
+    "address-pool": "pool-vlan113",
+    "disabled": "false"
+  },
+  {
+    ".id": "*CC",
+    "name": "dhcp-vlan114",
+    "interface": "vlan114",
+    "address-pool": "pool-vlan114",
+    "disabled": "false"
+  },
+  {
+    ".id": "*D0",
+    "name": "dhcp-vlan115",
+    "interface": "vlan115",
+    "address-pool": "pool-vlan115",
+    "disabled": "false"
+  },
+  {
+    ".id": "*D4",
+    "name": "dhcp-vlan116",
+    "interface": "vlan116",
+    "address-pool": "pool-vlan116",
+    "disabled": "false"
+  },
+  {
+    ".id": "*D8",
+    "name": "dhcp-vlan117",
+    "interface": "vlan117",
+    "address-pool": "pool-vlan117",
+    "disabled": "false"
+  },
+  {
+    ".id": "*DC",
+    "name": "dhcp-vlan118",
+    "interface": "vlan118",
+    "address-pool": "pool-vlan118",
+    "disabled": "false"
+  },
+  {
+    ".id": "*E0",
+    "name": "dhcp-vlan119",
+    "interface": "vlan119",
+    "address-pool": "pool-vlan119",
+    "disabled": "false"
+  },
+  {
+    ".id": "*E4",
+    "name": "dhcp-vlan120",
+    "interface": "vlan120",
+    "address-pool": "pool-vlan120",
+    "disabled": "false"
+  },
+  {
+    ".id": "*E8",
+    "name": "dhcp-vlan121",
+    "interface": "vlan121",
+    "address-pool": "pool-vlan121",
+    "disabled": "false"
+  },
+  {
+    ".id": "*EC",
+    "name": "dhcp-vlan122",
+    "interface": "vlan122",
+    "address-pool": "pool-vlan122",
+    "disabled": "false"
+  },
+  {
+    ".id": "*F0",
+    "name": "dhcp-vlan123",
+    "interface": "vlan123",
+    "address-pool": "pool-vlan123",
+    "disabled": "false"
+  },
+  {
+    ".id": "*F4",
+    "name": "dhcp-vlan124",
+    "interface": "vlan124",
+    "address-pool": "pool-vlan124",
+    "disabled": "false"
+  },
+  {
+    ".id": "*F8",
+    "name": "dhcp-vlan125",
+    "interface": "vlan125",
+    "address-pool": "pool-vlan125",
+    "disabled": "false"
+  },
+  {
+    ".id": "*FC",
+    "name": "dhcp-vlan126",
+    "interface": "vlan126",
+    "address-pool": "pool-vlan126",
+    "disabled": "false"
+  },
+  {
+    ".id": "*100",
+    "name": "dhcp-vlan127",
+    "interface": "vlan127",
+    "address-pool": "pool-vlan127",
+    "disabled": "false"
+  },
+  {
+    ".id": "*104",
+    "name": "dhcp-vlan128",
+    "interface": "vlan128",
+    "address-pool": "pool-vlan128",
+    "disabled": "false"
+  },
+  {
+    ".id": "*108",
+    "name": "dhcp-vlan129",
+    "interface": "vlan129",
+    "address-pool": "pool-vlan129",
+    "disabled": "false"
+  },
+  {
+    ".id": "*10C",
+    "name": "dhcp-vlan130",
+    "interface": "vlan130",
+    "address-pool": "pool-vlan130",
+    "disabled": "false"
+  },
+  {
+    ".id": "*110",
+    "name": "dhcp-vlan131",
+    "interface": "vlan131",
+    "address-pool": "pool-vlan131",
+    "disabled": "false"
+  },
+  {
+    ".id": "*114",
+    "name": "dhcp-vlan132",
+    "interface": "vlan132",
+    "address-pool": "pool-vlan132",
+    "disabled": "false"
+  },
+  {
+    ".id": "*118",
+    "name": "dhcp-vlan133",
+    "interface": "vlan133",
+    "address-pool": "pool-vlan133",
+    "disabled": "false"
+  },
+  {
+    ".id": "*11C",
+    "name": "dhcp-vlan134",
+    "interface": "vlan134",
+    "address-pool": "pool-vlan134",
+    "disabled": "false"
+  },
+  {
+    ".id": "*120",
+    "name": "dhcp-vlan135",
+    "interface": "vlan135",
+    "address-pool": "pool-vlan135",
+    "disabled": "false"
+  },
+  {
+    ".id": "*124",
+    "name": "dhcp-vlan136",
+    "interface": "vlan136",
+    "address-pool": "pool-vlan136",
+    "disabled": "false"
+  },
+  {
+    ".id": "*128",
+    "name": "dhcp-vlan137",
+    "interface": "vlan137",
+    "address-pool": "pool-vlan137",
+    "disabled": "false"
+  },
+  {
+    ".id": "*12C",
+    "name": "dhcp-vlan138",
+    "interface": "vlan138",
+    "address-pool": "pool-vlan138",
+    "disabled": "false"
+  },
+  {
+    ".id": "*130",
+    "name": "dhcp-vlan139",
+    "interface": "vlan139",
+    "address-pool": "pool-vlan139",
+    "disabled": "false"
+  },
+  {
+    ".id": "*134",
+    "name": "dhcp-vlan140",
+    "interface": "vlan140",
+    "address-pool": "pool-vlan140",
+    "disabled": "false"
+  }
+]

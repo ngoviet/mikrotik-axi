@@ -1,0 +1,336 @@
+[
+  {
+    ".id": "*2C0",
+    "src-address": "10.101.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po1",
+    "disabled": "false",
+    "comment": "FARM-1"
+  },
+  {
+    ".id": "*2C1",
+    "src-address": "10.102.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po2",
+    "disabled": "false",
+    "comment": "FARM-2"
+  },
+  {
+    ".id": "*2C2",
+    "src-address": "10.103.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po3",
+    "disabled": "false",
+    "comment": "FARM-3"
+  },
+  {
+    ".id": "*2C3",
+    "src-address": "10.104.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po4",
+    "disabled": "false",
+    "comment": "FARM-4"
+  },
+  {
+    ".id": "*2C4",
+    "src-address": "10.105.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po5",
+    "disabled": "false",
+    "comment": "FARM-5"
+  },
+  {
+    ".id": "*2C5",
+    "src-address": "10.106.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po6",
+    "disabled": "false",
+    "comment": "FARM-6"
+  },
+  {
+    ".id": "*2C6",
+    "src-address": "10.107.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po7",
+    "disabled": "false",
+    "comment": "FARM-7"
+  },
+  {
+    ".id": "*2C7",
+    "src-address": "10.108.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po8",
+    "disabled": "false",
+    "comment": "FARM-8"
+  },
+  {
+    ".id": "*2C8",
+    "src-address": "10.109.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po9",
+    "disabled": "false",
+    "comment": "FARM-9"
+  },
+  {
+    ".id": "*2C9",
+    "src-address": "10.110.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po10",
+    "disabled": "false",
+    "comment": "FARM-10"
+  },
+  {
+    ".id": "*2CA",
+    "src-address": "10.111.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po11",
+    "disabled": "false",
+    "comment": "FARM-11"
+  },
+  {
+    ".id": "*2CB",
+    "src-address": "10.112.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po12",
+    "disabled": "false",
+    "comment": "FARM-12"
+  },
+  {
+    ".id": "*2CC",
+    "src-address": "10.113.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po13",
+    "disabled": "false",
+    "comment": "FARM-13"
+  },
+  {
+    ".id": "*2CD",
+    "src-address": "10.114.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po14",
+    "disabled": "false",
+    "comment": "FARM-14"
+  },
+  {
+    ".id": "*2CE",
+    "src-address": "10.115.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po15",
+    "disabled": "false",
+    "comment": "FARM-15"
+  },
+  {
+    ".id": "*2CF",
+    "src-address": "10.116.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po16",
+    "disabled": "false",
+    "comment": "FARM-16"
+  },
+  {
+    ".id": "*2D0",
+    "src-address": "10.117.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po17",
+    "disabled": "false",
+    "comment": "FARM-17"
+  },
+  {
+    ".id": "*2D1",
+    "src-address": "10.118.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po18",
+    "disabled": "false",
+    "comment": "FARM-18"
+  },
+  {
+    ".id": "*2D2",
+    "src-address": "10.119.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po19",
+    "disabled": "false",
+    "comment": "FARM-19"
+  },
+  {
+    ".id": "*2D3",
+    "src-address": "10.120.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po20",
+    "disabled": "false",
+    "comment": "FARM-20"
+  },
+  {
+    ".id": "*2D4",
+    "src-address": "10.121.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po21",
+    "disabled": "false",
+    "comment": "FARM-21"
+  },
+  {
+    ".id": "*2D5",
+    "src-address": "10.122.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po22",
+    "disabled": "false",
+    "comment": "FARM-22"
+  },
+  {
+    ".id": "*2D6",
+    "src-address": "10.123.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po23",
+    "disabled": "false",
+    "comment": "FARM-23"
+  },
+  {
+    ".id": "*2D7",
+    "src-address": "10.124.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po24",
+    "disabled": "false",
+    "comment": "FARM-24"
+  },
+  {
+    ".id": "*2D8",
+    "src-address": "10.125.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po25",
+    "disabled": "false",
+    "comment": "FARM-25"
+  },
+  {
+    ".id": "*2D9",
+    "src-address": "10.126.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po26",
+    "disabled": "false",
+    "comment": "FARM-26"
+  },
+  {
+    ".id": "*2DA",
+    "src-address": "10.127.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po27",
+    "disabled": "false",
+    "comment": "FARM-27"
+  },
+  {
+    ".id": "*2DB",
+    "src-address": "10.128.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po28",
+    "disabled": "false",
+    "comment": "FARM-28"
+  },
+  {
+    ".id": "*2DC",
+    "src-address": "10.129.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po29",
+    "disabled": "false",
+    "comment": "FARM-29"
+  },
+  {
+    ".id": "*2DD",
+    "src-address": "10.130.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po30",
+    "disabled": "false",
+    "comment": "FARM-30"
+  },
+  {
+    ".id": "*2DE",
+    "src-address": "10.131.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po31",
+    "disabled": "false",
+    "comment": "FARM-31"
+  },
+  {
+    ".id": "*2DF",
+    "src-address": "10.132.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po32",
+    "disabled": "false",
+    "comment": "FARM-32"
+  },
+  {
+    ".id": "*2E0",
+    "src-address": "10.133.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po33",
+    "disabled": "false",
+    "comment": "FARM-33"
+  },
+  {
+    ".id": "*2E1",
+    "src-address": "10.134.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po34",
+    "disabled": "false",
+    "comment": "FARM-34"
+  },
+  {
+    ".id": "*2E2",
+    "src-address": "10.135.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po35",
+    "disabled": "false",
+    "comment": "FARM-35"
+  },
+  {
+    ".id": "*2E3",
+    "src-address": "10.136.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po36",
+    "disabled": "false",
+    "comment": "FARM-36"
+  },
+  {
+    ".id": "*2E4",
+    "src-address": "10.137.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po37",
+    "disabled": "false",
+    "comment": "FARM-37"
+  },
+  {
+    ".id": "*2E5",
+    "src-address": "10.138.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po38",
+    "disabled": "false",
+    "comment": "FARM-38"
+  },
+  {
+    ".id": "*2E6",
+    "src-address": "10.139.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po39",
+    "disabled": "false",
+    "comment": "FARM-39"
+  },
+  {
+    ".id": "*2E7",
+    "src-address": "10.140.0.0/24",
+    "action": "lookup-only-in-table",
+    "table": "to-po40",
+    "disabled": "false",
+    "comment": "FARM-40"
+  },
+  {
+    ".id": "*2E8",
+    "dst-address": "10.0.0.0/8",
+    "action": "lookup",
+    "table": "main",
+    "disabled": "false"
+  },
+  {
+    ".id": "*2E9",
+    "dst-address": "192.168.0.0/16",
+    "action": "lookup",
+    "table": "main",
+    "disabled": "false"
+  }
+]

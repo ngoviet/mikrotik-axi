@@ -1,0 +1,371 @@
+[
+  {
+    ".id": "*10",
+    "name": "vrrp1",
+    "interface": "ether1",
+    "vrid": "1",
+    "priority": "254",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*13",
+    "name": "vrrp2",
+    "interface": "ether1",
+    "vrid": "2",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*16",
+    "name": "vrrp3",
+    "interface": "ether1",
+    "vrid": "3",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*19",
+    "name": "vrrp4",
+    "interface": "ether1",
+    "vrid": "4",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*1C",
+    "name": "vrrp5",
+    "interface": "ether1",
+    "vrid": "5",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*1F",
+    "name": "vrrp6",
+    "interface": "ether1",
+    "vrid": "6",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*22",
+    "name": "vrrp7",
+    "interface": "ether1",
+    "vrid": "7",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*25",
+    "name": "vrrp8",
+    "interface": "ether1",
+    "vrid": "8",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*28",
+    "name": "vrrp9",
+    "interface": "ether2",
+    "vrid": "9",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*2B",
+    "name": "vrrp10",
+    "interface": "ether2",
+    "vrid": "10",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*2E",
+    "name": "vrrp11",
+    "interface": "ether2",
+    "vrid": "11",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*31",
+    "name": "vrrp12",
+    "interface": "ether2",
+    "vrid": "12",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*34",
+    "name": "vrrp13",
+    "interface": "ether2",
+    "vrid": "13",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*37",
+    "name": "vrrp14",
+    "interface": "ether2",
+    "vrid": "14",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*3A",
+    "name": "vrrp15",
+    "interface": "ether2",
+    "vrid": "15",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*3D",
+    "name": "vrrp16",
+    "interface": "ether2",
+    "vrid": "16",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*40",
+    "name": "vrrp17",
+    "interface": "ether3",
+    "vrid": "17",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*43",
+    "name": "vrrp18",
+    "interface": "ether3",
+    "vrid": "18",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*46",
+    "name": "vrrp19",
+    "interface": "ether3",
+    "vrid": "19",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*49",
+    "name": "vrrp20",
+    "interface": "ether3",
+    "vrid": "20",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*4C",
+    "name": "vrrp21",
+    "interface": "ether3",
+    "vrid": "21",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*4F",
+    "name": "vrrp22",
+    "interface": "ether3",
+    "vrid": "22",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*52",
+    "name": "vrrp23",
+    "interface": "ether3",
+    "vrid": "23",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*55",
+    "name": "vrrp24",
+    "interface": "ether3",
+    "vrid": "24",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*58",
+    "name": "vrrp25",
+    "interface": "ether4",
+    "vrid": "25",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*5B",
+    "name": "vrrp26",
+    "interface": "ether4",
+    "vrid": "26",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*5E",
+    "name": "vrrp27",
+    "interface": "ether4",
+    "vrid": "27",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*61",
+    "name": "vrrp28",
+    "interface": "ether4",
+    "vrid": "28",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*64",
+    "name": "vrrp29",
+    "interface": "ether4",
+    "vrid": "29",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*67",
+    "name": "vrrp30",
+    "interface": "ether4",
+    "vrid": "30",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*6A",
+    "name": "vrrp31",
+    "interface": "ether4",
+    "vrid": "31",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*6D",
+    "name": "vrrp32",
+    "interface": "ether4",
+    "vrid": "32",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*70",
+    "name": "vrrp33",
+    "interface": "ether5",
+    "vrid": "33",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*73",
+    "name": "vrrp34",
+    "interface": "ether5",
+    "vrid": "34",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*76",
+    "name": "vrrp35",
+    "interface": "ether5",
+    "vrid": "35",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*79",
+    "name": "vrrp36",
+    "interface": "ether5",
+    "vrid": "36",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*7C",
+    "name": "vrrp37",
+    "interface": "ether5",
+    "vrid": "37",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*7F",
+    "name": "vrrp38",
+    "interface": "ether5",
+    "vrid": "38",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*82",
+    "name": "vrrp39",
+    "interface": "ether5",
+    "vrid": "39",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*85",
+    "name": "vrrp40",
+    "interface": "ether5",
+    "vrid": "40",
+    "priority": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*88",
+    "name": "vrrp241",
+    "interface": "ether3",
+    "vrid": "241",
+    "priority": "100",
+    "running": "false",
+    "disabled": "true"
+  }
+]

@@ -1,0 +1,170 @@
+[
+  {
+    ".id": "*386",
+    "name": "api",
+    "port": "8728",
+    "disabled": "true",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "",
+    "invalid": "false"
+  },
+  {
+    ".id": "*387",
+    "name": "api-ssl",
+    "port": "8729",
+    "disabled": "true",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "",
+    "invalid": "false"
+  },
+  {
+    ".id": "*388",
+    "name": "ftp",
+    "port": "21",
+    "disabled": "true",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "",
+    "invalid": "false"
+  },
+  {
+    ".id": "*389",
+    "name": "ssh",
+    "port": "22222",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "192.168.100.0/24",
+    "invalid": "false"
+  },
+  {
+    ".id": "*38A",
+    "name": "telnet",
+    "port": "23",
+    "disabled": "true",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "",
+    "invalid": "false"
+  },
+  {
+    ".id": "*38B",
+    "name": "winbox",
+    "port": "8291",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "192.168.100.0/24",
+    "invalid": "false"
+  },
+  {
+    ".id": "*38C",
+    "name": "www",
+    "port": "80",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "192.168.100.0/24",
+    "invalid": "false"
+  },
+  {
+    ".id": "*38D",
+    "name": "www-ssl",
+    "port": "443",
+    "disabled": "true",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "",
+    "invalid": "false"
+  },
+  {
+    ".id": "*38E",
+    "name": "reverse-proxy",
+    "port": "443",
+    "disabled": "true",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "",
+    "invalid": "false"
+  },
+  {
+    ".id": "*38F",
+    "name": "resolver",
+    "port": "53",
+    "proto": "udp",
+    "disabled": "false",
+    "dynamic": "true",
+    "invalid": "false"
+  },
+  {
+    ".id": "*390",
+    "name": "dhcp",
+    "port": "67",
+    "proto": "udp",
+    "disabled": "false",
+    "dynamic": "true",
+    "invalid": "false"
+  },
+  {
+    ".id": "*391",
+    "name": "ntp",
+    "port": "123",
+    "proto": "udp",
+    "disabled": "false",
+    "dynamic": "true",
+    "invalid": "false"
+  },
+  {
+    ".id": "*392",
+    "name": "detnet",
+    "port": "32984",
+    "proto": "udp",
+    "disabled": "false",
+    "dynamic": "true",
+    "invalid": "false"
+  },
+  {
+    ".id": "*393",
+    "name": "detnet",
+    "port": "32985",
+    "proto": "udp",
+    "disabled": "false",
+    "dynamic": "true",
+    "invalid": "false"
+  },
+  {
+    ".id": "*394",
+    "name": "detnet",
+    "port": "32986",
+    "proto": "udp",
+    "disabled": "false",
+    "dynamic": "true",
+    "invalid": "false"
+  },
+  {
+    ".id": "*395",
+    "name": "www",
+    "port": "80",
+    "proto": "tcp",
+    "disabled": "false",
+    "dynamic": "true",
+    "invalid": "false",
+    "connection": "true",
+    "local": "192.168.100.1",
+    "remote": "192.168.100.50:59927"
+  },
+  {
+    ".id": "*396",
+    "name": "winbox",
+    "port": "8291",
+    "proto": "tcp",
+    "disabled": "false",
+    "dynamic": "true",
+    "invalid": "false",
+    "connection": "true",
+    "local": "192.168.100.1",
+    "remote": "192.168.100.50:59616"
+  }
+]

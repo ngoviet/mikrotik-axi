@@ -1,0 +1,67 @@
+{
+  "name": "mikrotik-axi",
+  "version": "0.0.0",
+  "description": "Inspect and safely operate MikroTik RouterOS v7 devices over REST",
+  "type": "module",
+  "license": "MIT",
+  "author": "ngoviet",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ngoviet/mikrotik-axi.git"
+  },
+  "homepage": "https://github.com/ngoviet/mikrotik-axi#readme",
+  "keywords": [
+    "axi",
+    "mikrotik",
+    "routeros",
+    "agent",
+    "cli",
+    "toon",
+    "claude-code",
+    "codex",
+    "network"
+  ],
+  "bin": {
+    "mikrotik-axi": "dist/bin/mikrotik-axi.js",
+    "mikrotik-axi-hook": "dist/bin/mikrotik-axi-hook.js"
+  },
+  "files": [
+    "dist",
+    "skill",
+    "profiles/example.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@12.11.2",
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "tsc -p tsconfig.json && eslint . && vitest run",
+    "test:live": "vitest run --config vitest.live.config.ts",
+    "build:scripts": "tsup --config tsup.scripts.config.ts",
+    "skill:build": "tsup --config tsup.scripts.config.ts && node build/scripts/skill.js",
+    "skill:check": "tsup --config tsup.scripts.config.ts && node build/scripts/skill.js --check",
+    "fixtures:record": "tsup --config tsup.scripts.config.ts && node build/scripts/record-fixtures.js",
+    "fixtures:synthetic": "node scripts/gen-synthetic-fixtures.mjs test/fixtures",
+    "public:check": "node scripts/public-check.mjs",
+    "install:global": "tsup && npm pack --pack-destination build/pack && npm install -g build/pack/mikrotik-axi-0.0.0.tgz"
+  },
+  "dependencies": {
+    "axi-sdk-js": "^0.1.13"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.5",
+    "eslint": "^10.12.0",
+    "tsup": "^8.5.1",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.1",
+    "vitest": "^5.0.3"
+  }
+}

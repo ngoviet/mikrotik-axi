@@ -1,0 +1,21 @@
+[
+  {
+    ".id": "*5F",
+    "dst-address": "0.0.0.0/0",
+    "gateway": "192.168.100.1",
+    "distance": "1",
+    "routing-table": "main",
+    "active": "true",
+    "dynamic": "false",
+    "disabled": "false"
+  },
+  {
+    ".id": "*80000001",
+    "dst-address": "192.168.100.0/24",
+    "gateway": "vlan100",
+    "distance": "0",
+    "routing-table": "main",
+    "active": "true",
+    "dynamic": "true"
+  }
+]

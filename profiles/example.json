@@ -1,0 +1,51 @@
+{
+  "default": "core",
+  "devices": {
+    "core": {
+      "url": "https://192.0.2.1",
+      "expect_identity": "CORE-ROUTER",
+      "tls": {
+        "self_signed_pin_sha256": "00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF"
+      },
+      "credential_env": {
+        "user": "MIKROTIK_AXI_USER",
+        "pass": "MIKROTIK_AXI_PASS"
+      },
+      "credential_env_write": {
+        "user": "MIKROTIK_AXI_RW_USER",
+        "pass": "MIKROTIK_AXI_RW_PASS"
+      },
+      "line_map": {
+        "ether1": "Line 1",
+        "ether2": "Line 2"
+      },
+      "expect": {
+        "pppoe_running": 16,
+        "main_default_gateway": "pppoe-out1"
+      },
+      "protected": {
+        "nat_dst_ports": [
+          80,
+          443
+        ],
+        "comment_prefixes": [
+          "HA_"
+        ]
+      },
+      "alerts": {
+        "disabled": [
+          "zero-hit"
+        ]
+      }
+    },
+    "switch": {
+      "url": "https://192.0.2.2",
+      "expect_identity": "ACCESS-SWITCH",
+      "credential_env": {
+        "user": "SWITCH_AXI_USER",
+        "pass": "SWITCH_AXI_PASS"
+      },
+      "timeout_ms": 3000
+    }
+  }
+}

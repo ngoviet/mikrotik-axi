@@ -1,0 +1,92 @@
+[
+  {
+    ".id": "*61",
+    "name": "api",
+    "port": "8728",
+    "disabled": "true",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "",
+    "invalid": "false"
+  },
+  {
+    ".id": "*62",
+    "name": "api-ssl",
+    "port": "8729",
+    "disabled": "true",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "",
+    "invalid": "false"
+  },
+  {
+    ".id": "*63",
+    "name": "ftp",
+    "port": "21",
+    "disabled": "true",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "",
+    "invalid": "false"
+  },
+  {
+    ".id": "*64",
+    "name": "ssh",
+    "port": "22",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "192.168.100.0/24",
+    "invalid": "false"
+  },
+  {
+    ".id": "*65",
+    "name": "telnet",
+    "port": "23",
+    "disabled": "true",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "",
+    "invalid": "false"
+  },
+  {
+    ".id": "*66",
+    "name": "winbox",
+    "port": "8291",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "192.168.100.0/24",
+    "invalid": "false"
+  },
+  {
+    ".id": "*67",
+    "name": "www",
+    "port": "80",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "192.168.100.0/24",
+    "invalid": "false"
+  },
+  {
+    ".id": "*68",
+    "name": "www-ssl",
+    "port": "443",
+    "disabled": "true",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "",
+    "invalid": "false"
+  },
+  {
+    ".id": "*69",
+    "name": "reverse-proxy",
+    "port": "443",
+    "disabled": "false",
+    "dynamic": "false",
+    "address": "",
+    "available-from": "",
+    "invalid": "false"
+  }
+]

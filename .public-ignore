@@ -1,0 +1,4 @@
+# File riêng tư theo site — không bao giờ public (scripts/public-check.mjs bỏ qua và cảnh báo lịch sử).
+CLAUDE.md
+AGENTS.md
+bench/results-*.md

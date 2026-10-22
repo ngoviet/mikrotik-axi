@@ -1,0 +1,6 @@
+{
+  "note": "Router ZTE của một mạng WiFi khác dùng trùng subnet với router thật: cùng IP, khác thiết bị",
+  "status": 404,
+  "headers": { "server": "ZTE web server 1.0 ZTE corp 2015", "content-type": "text/html" },
+  "body": "<html><head><title>404 Not Found</title></head><body><h1>404 Not Found</h1></body></html>"
+}

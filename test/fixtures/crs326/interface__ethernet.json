@@ -1,0 +1,127 @@
+[
+  {
+    ".id": "*2D",
+    "name": "ether1",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*2E",
+    "name": "ether2",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*2F",
+    "name": "ether3",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*30",
+    "name": "ether4",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*31",
+    "name": "ether5",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*32",
+    "name": "ether6",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*33",
+    "name": "ether7",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*34",
+    "name": "ether8",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*35",
+    "name": "ether9",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*36",
+    "name": "ether10",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*37",
+    "name": "ether11",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*38",
+    "name": "ether12",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*39",
+    "name": "ether13",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3A",
+    "name": "ether14",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3B",
+    "name": "ether15",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3C",
+    "name": "ether16",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3D",
+    "name": "ether17",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3E",
+    "name": "ether18",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*3F",
+    "name": "ether19",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*40",
+    "name": "ether20",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*41",
+    "name": "ether21",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*42",
+    "name": "ether22",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*43",
+    "name": "ether23",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*44",
+    "name": "ether24",
+    "loop-protect": "default"
+  },
+  {
+    ".id": "*45",
+    "name": "sfp-sfpplus1",
+    "loop-protect": "default"
+  }
+]

@@ -1,0 +1,116 @@
+[
+  {
+    ".id": "*397",
+    "interface": "ether6",
+    "bridge": "bridge1",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "edge": "auto",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*398",
+    "interface": "ether7",
+    "bridge": "bridge1",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "edge": "auto",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*399",
+    "interface": "ether8",
+    "bridge": "bridge1",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "edge": "auto",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*39A",
+    "interface": "ether9",
+    "bridge": "bridge1",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "edge": "auto",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*39B",
+    "interface": "ether10",
+    "bridge": "bridge1",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "edge": "auto",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*39C",
+    "interface": "ether11",
+    "bridge": "bridge1",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "edge": "auto",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*39D",
+    "interface": "ether12",
+    "bridge": "bridge1",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "edge": "auto",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*39E",
+    "interface": "ether13",
+    "bridge": "bridge1",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "edge": "auto",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*39F",
+    "interface": "ether14",
+    "bridge": "bridge1",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "edge": "auto",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*3A0",
+    "interface": "ether15",
+    "bridge": "bridge1",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "edge": "auto",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*3A1",
+    "interface": "sfp-sfpplus1",
+    "bridge": "bridge1",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*3A2",
+    "interface": "sfp-sfpplus2",
+    "bridge": "bridge1",
+    "disabled": "false",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  },
+  {
+    ".id": "*3A3",
+    "interface": "ether16",
+    "bridge": "bridge1",
+    "disabled": "true",
+    "bpdu-guard": "false",
+    "dynamic": "false"
+  }
+]

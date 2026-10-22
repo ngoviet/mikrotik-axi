@@ -1,0 +1,346 @@
+[
+  {
+    ".id": "*8A",
+    "name": "vlan10",
+    "interface": "bridge1",
+    "vlan-id": "10",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*8E",
+    "name": "vlan20",
+    "interface": "bridge1",
+    "vlan-id": "20",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*92",
+    "name": "vlan100",
+    "interface": "bridge1",
+    "vlan-id": "100",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*96",
+    "name": "vlan101",
+    "interface": "bridge1",
+    "vlan-id": "101",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*9A",
+    "name": "vlan102",
+    "interface": "bridge1",
+    "vlan-id": "102",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*9E",
+    "name": "vlan103",
+    "interface": "bridge1",
+    "vlan-id": "103",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*A2",
+    "name": "vlan104",
+    "interface": "bridge1",
+    "vlan-id": "104",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*A6",
+    "name": "vlan105",
+    "interface": "bridge1",
+    "vlan-id": "105",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*AA",
+    "name": "vlan106",
+    "interface": "bridge1",
+    "vlan-id": "106",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*AE",
+    "name": "vlan107",
+    "interface": "bridge1",
+    "vlan-id": "107",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*B2",
+    "name": "vlan108",
+    "interface": "bridge1",
+    "vlan-id": "108",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*B6",
+    "name": "vlan109",
+    "interface": "bridge1",
+    "vlan-id": "109",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*BA",
+    "name": "vlan110",
+    "interface": "bridge1",
+    "vlan-id": "110",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*BE",
+    "name": "vlan111",
+    "interface": "bridge1",
+    "vlan-id": "111",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*C2",
+    "name": "vlan112",
+    "interface": "bridge1",
+    "vlan-id": "112",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*C6",
+    "name": "vlan113",
+    "interface": "bridge1",
+    "vlan-id": "113",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*CA",
+    "name": "vlan114",
+    "interface": "bridge1",
+    "vlan-id": "114",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*CE",
+    "name": "vlan115",
+    "interface": "bridge1",
+    "vlan-id": "115",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*D2",
+    "name": "vlan116",
+    "interface": "bridge1",
+    "vlan-id": "116",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*D6",
+    "name": "vlan117",
+    "interface": "bridge1",
+    "vlan-id": "117",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*DA",
+    "name": "vlan118",
+    "interface": "bridge1",
+    "vlan-id": "118",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*DE",
+    "name": "vlan119",
+    "interface": "bridge1",
+    "vlan-id": "119",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*E2",
+    "name": "vlan120",
+    "interface": "bridge1",
+    "vlan-id": "120",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*E6",
+    "name": "vlan121",
+    "interface": "bridge1",
+    "vlan-id": "121",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*EA",
+    "name": "vlan122",
+    "interface": "bridge1",
+    "vlan-id": "122",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*EE",
+    "name": "vlan123",
+    "interface": "bridge1",
+    "vlan-id": "123",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*F2",
+    "name": "vlan124",
+    "interface": "bridge1",
+    "vlan-id": "124",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*F6",
+    "name": "vlan125",
+    "interface": "bridge1",
+    "vlan-id": "125",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*FA",
+    "name": "vlan126",
+    "interface": "bridge1",
+    "vlan-id": "126",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*FE",
+    "name": "vlan127",
+    "interface": "bridge1",
+    "vlan-id": "127",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*102",
+    "name": "vlan128",
+    "interface": "bridge1",
+    "vlan-id": "128",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*106",
+    "name": "vlan129",
+    "interface": "bridge1",
+    "vlan-id": "129",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*10A",
+    "name": "vlan130",
+    "interface": "bridge1",
+    "vlan-id": "130",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*10E",
+    "name": "vlan131",
+    "interface": "bridge1",
+    "vlan-id": "131",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*112",
+    "name": "vlan132",
+    "interface": "bridge1",
+    "vlan-id": "132",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*116",
+    "name": "vlan133",
+    "interface": "bridge1",
+    "vlan-id": "133",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*11A",
+    "name": "vlan134",
+    "interface": "bridge1",
+    "vlan-id": "134",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*11E",
+    "name": "vlan135",
+    "interface": "bridge1",
+    "vlan-id": "135",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*122",
+    "name": "vlan136",
+    "interface": "bridge1",
+    "vlan-id": "136",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*126",
+    "name": "vlan137",
+    "interface": "bridge1",
+    "vlan-id": "137",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*12A",
+    "name": "vlan138",
+    "interface": "bridge1",
+    "vlan-id": "138",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*12E",
+    "name": "vlan139",
+    "interface": "bridge1",
+    "vlan-id": "139",
+    "running": "true",
+    "disabled": "false"
+  },
+  {
+    ".id": "*132",
+    "name": "vlan140",
+    "interface": "bridge1",
+    "vlan-id": "140",
+    "running": "true",
+    "disabled": "false"
+  }
+]
