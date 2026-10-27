@@ -1,8 +1,27 @@
 # mikrotik-axi
 
+<!-- readme-axi type=tool -->
+
+**English** · [Tiếng Việt](README.vi.md)
+
 An [AXI](https://axi.md) for **MikroTik RouterOS v7**: a CLI that coding agents (Claude Code,
 Codex, OpenCode, …) call through the shell to inspect and carefully operate routers and
 switches over the REST API.
+
+> 🇻🇳 Built and maintained by one person in Việt Nam — if it saves you time, please
+> [support the project](#support-the-project).
+
+## Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Commands](#commands)
+- [Agent integration](#agent-integration)
+- [Development](#development)
+
+## Features
 
 - **Compact output.** [TOON](https://toonformat.dev/), ≤ 4 columns by default, aggregates
   precomputed, `help[]` hints for the next step.
@@ -19,23 +38,7 @@ switches over the REST API.
   dry-run unless `--confirm`, take a snapshot first, are read back to confirm they took effect,
   and come with a one-line revert.
 
-```
-$ mikrotik-axi
-bin: ~/AppData/Roaming/npm/mikrotik-axi
-description: Inspect and safely operate MikroTik RouterOS v7 devices over REST
-device: "core (identity CORE-ROUTER ok, RouterOS 7.24.4 (stable), up 12d4h)"
-health: "cpu 6%, mem 18%, temp 47C"
-wan: 40/40 pppoe running (1 disabled) · lines 8/8/8/8/8
-main_default: pppoe-out1 (1 active of 40)
-dhcp: 43 servers · 233 bound
-alerts[3]{id,message}:
-  no-netwatch,no netwatch or check-gateway for main default (ISP route loss undetected)
-  mac-server,mac-telnet and mac-winbox allowed on all interfaces
-  dup-mark,"duplicate mark-routing: Mark-V239 ×2, Mark-V240 ×2"
-help[2]: Run `mikrotik-axi fw mangle check` to audit rule order,Run `mikrotik-axi wan` for per-session status
-```
-
-## Install
+## Installation
 
 Requires Node.js ≥ 20.
 
@@ -43,7 +46,11 @@ Requires Node.js ≥ 20.
 npm install -g mikrotik-axi
 ```
 
-## 1. Create a RouterOS user for the tool
+## Configuration
+
+Three steps: a RouterOS user for the tool, a profile, and credentials.
+
+### 1. Create a RouterOS user for the tool
 
 Do **not** use `admin`. Create a dedicated user limited to your workstation's address.
 
@@ -61,7 +68,7 @@ certificate, pin its SHA-256 fingerprint in the profile. The first `https` run p
 fingerprint it saw, so you can compare it with `/certificate print detail`. Plain `http://`
 works but prints a warning on every run.
 
-## 2. Write a profile
+### 2. Write a profile
 
 `%APPDATA%\mikrotik-axi\profile.json` on Windows, `~/.config/mikrotik-axi/profile.json`
 elsewhere. You can also pass `--profile <path>` or set `MIKROTIK_AXI_PROFILE`. See
@@ -98,13 +105,33 @@ The profile fields:
   write commands use it; read commands and the session hook keep using `credential_env`, so the
   write-capable password is never loaded for a read.
 
-## 3. Credentials
+### 3. Credentials
 
 Credentials come only from environment variables, never from the profile:
 `MIKROTIK_AXI_USER` / `MIKROTIK_AXI_PASS`, or the variable names given in `credential_env`.
 `MIKROTIK_AXI_ENV_FILE=<path>` loads a private `KEY=VALUE` file without overriding variables
 that are already set. Passwords are never printed. Authentication errors show only the user
 name, the password length and a hash prefix.
+
+## Usage
+
+Run `mikrotik-axi` with no command (or `home`) for an overview of the default device:
+
+```
+$ mikrotik-axi
+bin: ~/AppData/Roaming/npm/mikrotik-axi
+description: Inspect and safely operate MikroTik RouterOS v7 devices over REST
+device: "core (identity CORE-ROUTER ok, RouterOS 7.24.4 (stable), up 12d4h)"
+health: "cpu 6%, mem 18%, temp 47C"
+wan: 40/40 pppoe running (1 disabled) · lines 8/8/8/8/8
+main_default: pppoe-out1 (1 active of 40)
+dhcp: 43 servers · 233 bound
+alerts[3]{id,message}:
+  no-netwatch,no netwatch or check-gateway for main default (ISP route loss undetected)
+  mac-server,mac-telnet and mac-winbox allowed on all interfaces
+  dup-mark,"duplicate mark-routing: Mark-V239 ×2, Mark-V240 ×2"
+help[2]: Run `mikrotik-axi fw mangle check` to audit rule order,Run `mikrotik-axi wan` for per-session status
+```
 
 ## Commands
 
@@ -191,9 +218,10 @@ Tests run against a fake RouterOS REST server built from the fixtures in `test/f
   <img src="https://raw.githubusercontent.com/ngoviet/.github/main/assets/support/vietqr-card.svg" width="300" alt="VietQR — MB Bank — NGO DUC VIET — 911051212">
 </p>
 
-<p align="center"><sub>🇻🇳 VietQR: quét bằng app ngân hàng bất kỳ, nội dung <code>Ung ho mikrotik-axi</code>. Cảm ơn bạn! · Thank you for keeping this project alive.</sub></p>
+<p align="center"><sub>🇻🇳 VietQR: scan with any Vietnamese banking app, transfer note <code>Ung ho mikrotik-axi</code>. Thank you for keeping this project alive!</sub></p>
+<p align="center"><sub>Crypto (BEP20 network): <code>0x57f07d44fb581cddc028a0c67d63a8cc05aa6caa</code> · USDT · USDC · BNB · ETH · BTC</sub></p>
 <!-- support:end -->
 
 ## License
 
-MIT
+[MIT](LICENSE) © Ngô Đức Việt. Not affiliated with or endorsed by MikroTik.
