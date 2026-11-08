@@ -1,0 +1,29 @@
+# CI cho repo public: GitHub Actions (miễn phí với repo public). Không dùng Woodpecker tự host
+# vì PR từ fork lạ sẽ chạy trên máy prod.
+# Test chạy offline trên fixture; test router thật (test/live, MIKROTIK_AXI_LIVE=1) KHÔNG chạy ở đây.
+# Action ghim SHA, đo 08/11/2026.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      # Đúng bản pnpm trong packageManager của package.json.
+      - run: npm install -g pnpm@12.11.2
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run check
+      - run: pnpm run skill:check
