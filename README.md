@@ -205,8 +205,10 @@ Tests run against a fake RouterOS REST server built from the fixtures in `test/f
 ## Support the project
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ngoviet/.github/main/assets/support/banner.svg" width="720" alt="Built and maintained by one person in Việt Nam">
+  <img src="https://raw.githubusercontent.com/ngoviet/.github/main/assets/support/banner-v2.svg" width="560" alt="Built and maintained by one person in Việt Nam">
 </p>
+
+<p align="center">Free and open source. Your support pays for new device support, faster fixes and every release.</p>
 
 <p align="center">
   <a href="https://buymeacoffee.com/ngoviet"><img src="https://raw.githubusercontent.com/ngoviet/.github/main/assets/support/btn-coffee.svg" height="56" alt="Buy me a coffee"></a>
@@ -222,7 +224,7 @@ Tests run against a fake RouterOS REST server built from the fixtures in `test/f
 
 <p align="center"><b>Crypto wallet, BNB Smart Chain (BEP20) only:</b><br><code>0xcbf0402b232cb24b4d998f09a4884f87b5f74750</code></p>
 
-<p align="center"><sub>🇻🇳 VietQR: scan with any Vietnamese banking app, transfer note <code>Ung ho mikrotik-axi</code>. Thank you for keeping this project alive!</sub></p>
+<p align="center">🇻🇳 VietQR: scan with any Vietnamese banking app, transfer note <code>Ung ho mikrotik-axi</code>. Thank you for keeping this project alive!</p>
 <!-- support:end -->
 
 ## License
