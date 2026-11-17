@@ -69,7 +69,7 @@ describe("singleton registry (trap #4)", () => {
 describe("redact", () => {
   it("masks secrets and truncates", () => {
     expect(redact('{"name":"x","password":"hunter2"}')).toBe('{"name":"x","password":"***"}');
-    expect(redact("token=abc&x=1")).toBe('token="***"&x=1');
+    expect(redact("token=abc&x=1")).toBe("token=***&x=1");
     expect(redact("a".repeat(400))).toHaveLength(301);
   });
 });
