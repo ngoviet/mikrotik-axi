@@ -186,6 +186,72 @@ describe("pppoe restart", () => {
   });
 });
 
+describe("dhcp move", () => {
+  const LEASES = "/ip/dhcp-server/lease";
+  const lease = (address: string) => (ds[LEASES] as Rows).find((r) => r["address"] === address);
+  beforeEach(() => {
+    // Fixture tổng hợp không có /ip/dhcp-server/network: thêm mạng của 2 server dùng trong test.
+    ds["/ip/dhcp-server/network"] = [
+      { ".id": "*N1", address: "10.113.0.0/24", gateway: "10.113.0.1" },
+      { ".id": "*N2", address: "10.100.0.0/24", gateway: "10.100.0.1" },
+    ];
+  });
+
+  it("dry-run plans the address change with renew warnings; nothing written", async () => {
+    const { out, code } = await cli(["dhcp", "move", "dhcp-vlan113", "10.113.0.10", "10.113.0.51"]);
+    expect(code).toBe(0);
+    expect(out).toMatch(/^result: dry-run \(nothing changed\)$/m);
+    expect(out).toContain("address: 10.113.0.10 → 10.113.0.51");
+    expect(out).toContain("keeps 10.113.0.10 until it renews");
+    expect(writes()).toHaveLength(0);
+  });
+
+  it("--confirm moves the static lease, reads back, and revert moves it back", async () => {
+    const applied = await cli(["dhcp", "move", "dhcp-vlan113", "10.113.0.10", "10.113.0.51", "--confirm"]);
+    expect(applied.code).toBe(0);
+    expect(applied.out).toMatch(/^verified: address=10\.113\.0\.51$/m);
+    expect(lease("10.113.0.51")?.[".id"]).toBe("*144");
+    const undone = await cli(["revert", snapshotPath(applied.out), "--confirm"]);
+    expect(undone.code).toBe(0);
+    expect(lease("10.113.0.10")?.[".id"]).toBe("*144");
+  });
+
+  it("refuses dynamic leases", async () => {
+    const { out, code } = await cli(["dhcp", "move", "dhcp-vlan100", "10.100.0.240", "10.100.0.60", "--confirm"]);
+    expect(code).toBe(1);
+    expect(out).toMatch(/^code: WRITE_REFUSED$/m);
+    expect(writes()).toHaveLength(0);
+  });
+
+  it.each([
+    ["outside the network", "10.114.0.5"],
+    ["the gateway", "10.113.0.1"],
+    ["the broadcast address", "10.113.0.255"],
+  ])("refuses a new address that is %s", async (_why, target) => {
+    const { out, code } = await cli(["dhcp", "move", "dhcp-vlan113", "10.113.0.10", target, "--confirm"]);
+    expect(code).toBe(2);
+    expect(out).toContain("is not a usable host address");
+    expect(writes()).toHaveLength(0);
+  });
+
+  it("refuses a new address already reserved or seen in ARP with another MAC", async () => {
+    (ds[LEASES] as Rows).push({ ".id": "*L9", address: "10.113.0.52", "mac-address": "02:00:00:00:BB:01", server: "dhcp-vlan113", dynamic: "false" });
+    (ds["/ip/arp"] as Rows).push({ ".id": "*A9", address: "10.113.0.53", "mac-address": "02:00:00:00:BB:02", interface: "vlan113", dynamic: "true" });
+    const reserved = await cli(["dhcp", "move", "dhcp-vlan113", "10.113.0.10", "10.113.0.52", "--confirm"]);
+    expect(reserved.out).toContain("already reserved");
+    const inUse = await cli(["dhcp", "move", "dhcp-vlan113", "10.113.0.10", "10.113.0.53", "--confirm"]);
+    expect(inUse.out).toContain("in use on the network");
+    expect(writes()).toHaveLength(0);
+  });
+
+  it("rejects malformed input before connecting", async () => {
+    const { out, code } = await cli(["dhcp", "move", "dhcp-vlan113", "10.113.0.10", "10.113.0.51,10.113.0.52"]);
+    expect(code).toBe(2);
+    expect(out).toMatch(/^code: VALIDATION_ERROR$/m);
+    expect(router.requests).toHaveLength(0);
+  });
+});
+
 describe("arp flush", () => {
   it("removes a dynamic entry; revert has nothing to do", async () => {
     const { out, code } = await cli(["arp", "flush", "10.100.0.240", "--confirm"]);

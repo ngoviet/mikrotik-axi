@@ -32,7 +32,7 @@ Run `npx -y mikrotik-axi` with no arguments. It prints the home view:
 | `npx -y mikrotik-axi health` | identity, board, version, uptime, cpu, memory, temperature, update status |
 | `npx -y mikrotik-axi wan [ips]` | PPPoE sessions per physical line; `ips` = public IP per session |
 | `npx -y mikrotik-axi routes <defaults\|rules>` | default routes per routing-table; /routing/rule vs mangle |
-| `npx -y mikrotik-axi dhcp [leases <server>]` | DHCP servers, bound leases, pool usage |
+| `npx -y mikrotik-axi dhcp [leases <server> \| move …]` | DHCP servers, bound leases, pool usage; WRITE: `move` one static reservation |
 | `npx -y mikrotik-axi vlans` | VLAN interfaces with addresses |
 | `npx -y mikrotik-axi iface [--type t]` | interfaces, running state, byte counters |
 | `npx -y mikrotik-axi fw <filter\|nat\|mangle\|raw> [check \| enable\|disable <.id>]` | firewall rules in order; mangle MSS/mark audit; WRITE: enable/disable a rule |

@@ -39,7 +39,7 @@ export const COMMANDS: Record<string, CommandSpec> = {
   health: { usage: "health", summary: "identity, board, version, uptime, cpu, memory, temperature, update status", help: HEALTH_HELP, run: healthCommand },
   wan: { usage: "wan [ips]", summary: "PPPoE sessions per physical line; `ips` = public IP per session", help: WAN_HELP, run: wanCommand },
   routes: { usage: "routes <defaults|rules>", summary: "default routes per routing-table; /routing/rule vs mangle", help: ROUTES_HELP, run: routesCommand },
-  dhcp: { usage: "dhcp [leases <server>]", summary: "DHCP servers, bound leases, pool usage", help: DHCP_HELP, run: dhcpCommand },
+  dhcp: { usage: "dhcp [leases <server> | move …]", summary: "DHCP servers, bound leases, pool usage; WRITE: `move` one static reservation", help: DHCP_HELP, run: dhcpCommand },
   vlans: { usage: "vlans", summary: "VLAN interfaces with addresses", help: VLANS_HELP, run: vlansCommand },
   iface: { usage: "iface [--type t]", summary: "interfaces, running state, byte counters", help: IFACE_HELP, run: ifaceCommand },
   fw: { usage: "fw <filter|nat|mangle|raw> [check | enable|disable <.id>]", summary: "firewall rules in order; mangle MSS/mark audit; WRITE: enable/disable a rule", help: FW_HELP, run: fwCommand },
