@@ -211,6 +211,41 @@ describe("log", () => {
     expect(out).toContain('"2026-10-13 07:28:00"');
   });
 
+  describe("masks secrets in messages (DDNS scripts log tokens and passwords)", () => {
+    // Giá trị GIẢ, chỉ dùng trong test.
+    const CF_TOKEN = "FAKEcfTokenForTestsOnly0000000000000000x";
+    const DYNU_PASS = "fake-dynu-pass-1234";
+    const secretLog = (ds: Dataset) => {
+      ds["/log"] = [
+        `fetch: url=https://api.cloudflare.com/client/v4/zones/z1/dns_records/r1 http-header-field="Authorization: Bearer ${CF_TOKEN},Content-Type: application/json"`,
+        `Download from https://api.dynu.com/nic/update?hostname=home.example.net&myip=203.0.113.7&password=${DYNU_PASS} FAILED: status 401`,
+        `fetch failed https://dynu-user:${DYNU_PASS}@api.dynu.com/nic/update`,
+        `cfddns token=${CF_TOKEN} zone=example.net`,
+      ].map((message, i) => ({ ".id": `*S${i}`, time: `2026-10-13 07:2${i}:00`, topics: "script,info", message }));
+    };
+
+    it.each([[["log"]], [["log", "--full"]], [["log", "--fields", "message"]]])("%j", async (argv) => {
+      const { out, code } = await run(argv, secretLog);
+      expect(code).toBe(0);
+      expect(out).not.toContain(CF_TOKEN);
+      expect(out).not.toContain(DYNU_PASS);
+      // Phần còn lại của dòng vẫn còn để chẩn đoán.
+      expect(out).toContain("Authorization: Bearer ***");
+      expect(out).toContain("api.dynu.com/nic/update?hostname=home.example.net&myip=203.0.113.7&password=*** FAILED: status 401");
+      expect(out).toContain("https://dynu-user:***@api.dynu.com/nic/update");
+    });
+
+    it("top_messages groups the masked text", async () => {
+      const { out } = await run(["log"], secretLog);
+      expect(out).toMatch(/^top_messages: .*cfddns token=\*\*\* zone=example\.net 1/m);
+    });
+
+    it("--grep matches the masked text, so it cannot probe a secret", async () => {
+      expect((await run(["log", "--grep", CF_TOKEN.slice(0, 12)], secretLog)).out).toMatch(/^matched: 0 of 4 entries$/m);
+      expect((await run(["log", "--grep", "api\\.dynu\\.com"], secretLog)).out).toMatch(/^matched: 2 of 4 entries$/m);
+    });
+  });
+
   it("invalid --since and --grep exit 2", async () => {
     expect((await run(["log", "--since", "soon"])).code).toBe(2);
     expect((await run(["log", "--grep", "("])).code).toBe(2);

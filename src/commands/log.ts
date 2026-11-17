@@ -1,6 +1,6 @@
 import { parseCommandArgs } from "../args.js";
 import { connect, type Runtime } from "../context.js";
-import { fail } from "../errors.js";
+import { fail, maskSecrets } from "../errors.js";
 import { formatDuration, parseDuration, type RosRecord } from "../ros/normalize.js";
 import { clip, countBy, renderList } from "../views/list.js";
 
@@ -56,7 +56,7 @@ export function parseLogTime(value: string | undefined, now: number): number | u
 }
 
 export const LOG_HELP = `usage: mikrotik-axi log [--topic <t>] [--since <dur>] [--grep <regex>] [flags]
-description: Router log, newest ${50} matching entries in time order; messages cut to ${MESSAGE_LIMIT} chars. --since is measured against the ROUTER clock
+description: Router log, newest ${50} matching entries in time order; messages cut to ${MESSAGE_LIMIT} chars. --since is measured against the ROUTER clock. Secrets in messages (password/token/secret/key values, Authorization and Bearer credentials, URL passwords) print as ***; --grep sees the masked text
 flags[5]:
   --topic <t>: entries whose topics include t (e.g. error, pppoe, dhcp)
   --since <dur>: only the last dur (e.g. 30m, 1h, 2d)
@@ -96,11 +96,14 @@ export async function logCommand(args: string[], rt: Runtime): Promise<Record<st
   }
 
   const ctx = await connect(global, rt);
-  const [entries, clock] = await Promise.all([
+  const [raw, clock] = await Promise.all([
     ctx.client.list("/log", { proplist: ["time", "topics", "message"] }),
     // Luôn đọc đồng hồ router (rẻ): cần để tính buffer log thực sự trải bao lâu.
     ctx.client.single("/system/clock", { proplist: ["date", "time"] }).catch(() => undefined),
   ]);
+  // Script (vd. cập nhật DDNS) có thể ghi nguyên URL/header kèm token, mật khẩu vào log
+  // ⇒ che ngay khi đọc về: --grep, top_messages và bảng in ra chỉ thấy bản đã che.
+  const entries = raw.map((e) => (e["message"] === undefined ? e : { ...e, message: maskSecrets(e["message"]) }));
   const now = clock ? parseClock(clock["date"], clock["time"]) : undefined;
   if (since && now === undefined) {
     fail(`cannot read the router clock (date=${clock?.["date"] ?? "?"}, time=${clock?.["time"] ?? "?"})`, "ROS_ERROR", [
