@@ -5,6 +5,7 @@ import type { RosClient } from "../ros/client.js";
 import { toBool, type RosRecord } from "../ros/normalize.js";
 import { naturalCompare } from "../views/format.js";
 import { assertFields, countBy, renderList } from "../views/list.js";
+import { DHCP_MOVE_HELP, dhcpMoveCommand } from "./writes.js";
 
 export interface DhcpSummary {
   servers: number;
@@ -55,14 +56,17 @@ export function poolSize(ranges: string | undefined): number | undefined {
 
 export const DHCP_HELP = `usage: mikrotik-axi dhcp [flags]
        mikrotik-axi dhcp leases <server> [flags]
+       mikrotik-axi dhcp move <server> <address> <new-address> [--confirm]
 description: DHCP servers with bound/total leases and pool usage (pools >= ${POOL_FULL_PCT}% flagged). \`dhcp leases <server>\` lists one server's leases; a static reservation in \`waiting\` just means that device is offline
-flags[3]:
+flags[4]:
   --fields a,b: dhcp columns name,bound,total,pool_used (also interface,pool,disabled); leases columns address,mac,host,status (also type,comment)
   --full: all rows
   --device <name>: device from the profile
-`;
+  --confirm: apply \`dhcp move\` (without it the move is a dry-run)
+${DHCP_MOVE_HELP}`;
 
 export async function dhcpCommand(args: string[], rt: Runtime): Promise<Record<string, unknown>> {
+  if (args[0] === "move") return dhcpMoveCommand(args, rt);
   const { positionals, global } = parseCommandArgs("dhcp", args, {}, 2);
   const [sub, server] = positionals;
   if (sub !== undefined && sub !== "leases") {

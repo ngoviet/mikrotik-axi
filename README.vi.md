@@ -158,6 +158,7 @@ cờ hợp lệ. Lỗi in ra stdout dạng `error:` / `code:` / `help:`.
 | `addr-list add\|remove <list> <address>` | một mục address-list |
 | `pppoe restart <name>` | disable + enable một PPPoE client |
 | `arp flush <address>` | xoá một mục ARP động |
+| `dhcp move <server> <địa-chỉ-cũ> <địa-chỉ-mới>` | chuyển một static lease DHCP sang địa chỉ mới |
 | `revert <snapshot>` | hoàn tác một thay đổi từ snapshot của nó |
 
 Mọi lệnh ghi đều đi qua cùng các bước:

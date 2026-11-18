@@ -6,7 +6,7 @@ import type { Runtime } from "../context.js";
 import { fail } from "../errors.js";
 import { encodeId } from "../ros/client.js";
 import { toBool } from "../ros/normalize.js";
-import { addOp, findMatching, opFromRevert, removeOp, type WriteOp } from "../write/ops.js";
+import { addOp, findMatching, opFromRevert, removeOp, setOp, type WriteOp } from "../write/ops.js";
 import { assertNotProtected } from "../write/protected.js";
 import { CONFIRM_FLAG, connectForWrite, runWrite } from "../write/run.js";
 import { loadSnapshot } from "../write/snapshot.js";
@@ -161,6 +161,104 @@ export async function addrListCommand(args: string[], rt: Runtime): Promise<Reco
     sub === "add"
       ? await addOp(ctx.client, ctx.device, { command, menu, body: { list, address, ...(comment ? { comment } : {}) }, match: { list, address } })
       : await removeOp(ctx.client, ctx.device, { command, menu, match: { list, address } });
+  return runWrite(ctx, op, flags["confirm"] === true, rt);
+}
+
+// ---------------------------------------------------------------- dhcp move
+
+/** Đoạn help của `dhcp move`, nối vào DHCP_HELP (help theo lệnh cấp 1). */
+export const DHCP_MOVE_HELP = `move: WRITE. Move one STATIC DHCP reservation to a new address on the same server; ${WRITE_NOTE}. Refuses dynamic leases, an address outside the server's network, and a new address already held by a lease or an ARP entry. The device keeps its old address until it renews: reconnect it to apply now
+examples[1]:
+  mikrotik-axi dhcp move dhcp-v20 192.168.20.11 192.168.20.51 --confirm
+`;
+
+const IPV4 = /^(0|[1-9]\d{0,2})\.(0|[1-9]\d{0,2})\.(0|[1-9]\d{0,2})\.(0|[1-9]\d{0,2})$/;
+
+function ip4(s: string): number | undefined {
+  const m = IPV4.exec(s);
+  if (!m) return undefined;
+  const p = m.slice(1).map(Number);
+  if (p.some((x) => x > 255)) return undefined;
+  return ((p[0]! << 24) >>> 0) + (p[1]! << 16) + (p[2]! << 8) + p[3]!;
+}
+
+/** "192.168.20.0/24" → [network, broadcast]; định dạng lạ ⇒ undefined. */
+function cidrRange(cidr: string | undefined): [number, number] | undefined {
+  const [net, bits] = (cidr ?? "").split("/");
+  const base = ip4(net ?? "");
+  const n = Number(bits);
+  if (base === undefined || !Number.isInteger(n) || n < 0 || n > 32) return undefined;
+  const size = 2 ** (32 - n);
+  const lo = base - (base % size);
+  return [lo, lo + size - 1];
+}
+
+export async function dhcpMoveCommand(args: string[], rt: Runtime): Promise<Record<string, unknown>> {
+  const { positionals, global, flags } = parseCommandArgs("dhcp", args, CONFIRM_FLAG, 4);
+  const [, server, address, target] = positionals;
+  if (!server || !address || !target) {
+    fail("usage: mikrotik-axi dhcp move <server> <address> <new-address>", "VALIDATION_ERROR", ["Run `mikrotik-axi dhcp move --help`"]);
+  }
+  const from = ip4(address);
+  const to = ip4(target);
+  if (from === undefined || to === undefined) fail("dhcp move: both addresses must be IPv4 in dotted-decimal form, no leading zeros (one address each)", "VALIDATION_ERROR");
+  if (from === to) fail("dhcp move: new address equals the current one", "VALIDATION_ERROR");
+
+  const ctx = await connectForWrite(global, rt);
+  const { client } = ctx;
+  const menu = "/ip/dhcp-server/lease";
+  const [servers, onServer, taken, networks, arp] = await Promise.all([
+    client.list("/ip/dhcp-server", { proplist: ["name", "lease-time"] }),
+    findMatching(client, menu, { server, address }),
+    findMatching(client, menu, { address: target }),
+    client.list("/ip/dhcp-server/network", { proplist: ["address", "gateway"] }),
+    findMatching(client, "/ip/arp", { address: target }),
+  ]);
+  const srv = servers.find((s) => s["name"] === server);
+  if (!srv) fail(`unknown DHCP server: ${server}`, "VALIDATION_ERROR", ["Run `mikrotik-axi dhcp` to list server names"]);
+  if (onServer.length !== 1) {
+    fail(`${server}: ${onServer.length} leases have address ${address}`, "VALIDATION_ERROR", [`Run \`mikrotik-axi dhcp leases ${server}\``]);
+  }
+  const lease = onServer[0]!;
+  if (toBool(lease["dynamic"], "dynamic")) {
+    fail(`lease ${address} is dynamic: only static reservations can be moved`, "WRITE_REFUSED", [
+      "Make it static on the router first (make-static), then move it",
+    ]);
+  }
+  // Mạng của server = network chứa địa chỉ cũ; địa chỉ mới phải cùng mạng và không phải network/broadcast/gateway.
+  const net = networks.find((n) => {
+    const r = cidrRange(n["address"]);
+    return r !== undefined && from >= r[0] && from <= r[1];
+  });
+  const range = cidrRange(net?.["address"]);
+  if (!net || !range) fail(`no /ip/dhcp-server/network contains ${address}`, "VALIDATION_ERROR");
+  const gateways = (net["gateway"] ?? "").split(",").map((g) => g.trim());
+  if (to <= range[0] || to >= range[1] || gateways.includes(target)) {
+    fail(`${target} is not a usable host address in ${net["address"]}${net["gateway"] ? ` (gateway ${net["gateway"]})` : ""}`, "VALIDATION_ERROR");
+  }
+  if (taken.length) {
+    fail(`${target} is already reserved: ${taken.map((t) => `${t["server"] ?? "?"} ${t["mac-address"] ?? ""}`.trim()).join(", ")}`, "WRITE_REFUSED");
+  }
+  const mac = lease["mac-address"] ?? "";
+  const squatter = arp.find((a) => (a["mac-address"] ?? "").toUpperCase() !== mac.toUpperCase() && a["mac-address"]);
+  if (squatter) {
+    fail(`${target} is in use on the network (ARP: ${squatter["mac-address"]} on ${squatter["interface"] ?? "?"})`, "WRITE_REFUSED", [
+      "A device with a manual IP probably holds it: pick another address",
+    ]);
+  }
+
+  const op = await setOp(client, ctx.device, {
+    command: `dhcp move ${server} ${address} ${target}`,
+    menu,
+    id: lease[".id"]!,
+    desired: { address: target },
+    listHint: `Run \`mikrotik-axi dhcp leases ${server}\``,
+  });
+  op.target = `${menu} ${lease[".id"]} (${mac}${lease["comment"] ? `, ${lease["comment"]}` : lease["host-name"] ? `, ${lease["host-name"]}` : ""})`;
+  op.warnings.push(
+    `the device keeps ${address} until it renews its lease${srv["lease-time"] ? ` (lease-time ${srv["lease-time"]})` : ""}: reconnect or power-cycle it to switch now`,
+    `update anything that points at ${address} (apps, integrations, firewall entries)`,
+  );
   return runWrite(ctx, op, flags["confirm"] === true, rt);
 }
 
