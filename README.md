@@ -161,6 +161,7 @@ and list the valid ones. Errors go to stdout as `error:` / `code:` / `help:`.
 | `addr-list add\|remove <list> <address>` | one address-list entry |
 | `pppoe restart <name>` | disable + enable one PPPoE client |
 | `arp flush <address>` | drop one dynamic ARP entry |
+| `dhcp move <server> <address> <new-address>` | move one static DHCP reservation |
 | `revert <snapshot>` | undo a change from its snapshot |
 
 Every write goes through the same steps:

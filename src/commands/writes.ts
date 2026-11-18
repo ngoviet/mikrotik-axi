@@ -172,7 +172,7 @@ examples[1]:
   mikrotik-axi dhcp move dhcp-v20 192.168.20.11 192.168.20.51 --confirm
 `;
 
-const IPV4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+const IPV4 = /^(0|[1-9]\d{0,2})\.(0|[1-9]\d{0,2})\.(0|[1-9]\d{0,2})\.(0|[1-9]\d{0,2})$/;
 
 function ip4(s: string): number | undefined {
   const m = IPV4.exec(s);
@@ -201,7 +201,7 @@ export async function dhcpMoveCommand(args: string[], rt: Runtime): Promise<Reco
   }
   const from = ip4(address);
   const to = ip4(target);
-  if (from === undefined || to === undefined) fail("dhcp move: both addresses must be IPv4 (one address each)", "VALIDATION_ERROR");
+  if (from === undefined || to === undefined) fail("dhcp move: both addresses must be IPv4 in dotted-decimal form, no leading zeros (one address each)", "VALIDATION_ERROR");
   if (from === to) fail("dhcp move: new address equals the current one", "VALIDATION_ERROR");
 
   const ctx = await connectForWrite(global, rt);
@@ -232,7 +232,8 @@ export async function dhcpMoveCommand(args: string[], rt: Runtime): Promise<Reco
   });
   const range = cidrRange(net?.["address"]);
   if (!net || !range) fail(`no /ip/dhcp-server/network contains ${address}`, "VALIDATION_ERROR");
-  if (to <= range[0] || to >= range[1] || target === net["gateway"]) {
+  const gateways = (net["gateway"] ?? "").split(",").map((g) => g.trim());
+  if (to <= range[0] || to >= range[1] || gateways.includes(target)) {
     fail(`${target} is not a usable host address in ${net["address"]}${net["gateway"] ? ` (gateway ${net["gateway"]})` : ""}`, "VALIDATION_ERROR");
   }
   if (taken.length) {

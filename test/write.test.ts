@@ -244,11 +244,22 @@ describe("dhcp move", () => {
     expect(writes()).toHaveLength(0);
   });
 
-  it("rejects malformed input before connecting", async () => {
-    const { out, code } = await cli(["dhcp", "move", "dhcp-vlan113", "10.113.0.10", "10.113.0.51,10.113.0.52"]);
+  it.each([["a list", "10.113.0.51,10.113.0.52"], ["leading zeros", "10.113.0.051"], ["a leading-zero gateway", "10.113.0.01"]])(
+    "rejects malformed input (%s) before connecting",
+    async (_why, target) => {
+      const { out, code } = await cli(["dhcp", "move", "dhcp-vlan113", "10.113.0.10", target, "--confirm"]);
+      expect(code).toBe(2);
+      expect(out).toMatch(/^code: VALIDATION_ERROR$/m);
+      expect(router.requests).toHaveLength(0);
+    },
+  );
+
+  it("refuses any address of a multi-gateway network", async () => {
+    ds["/ip/dhcp-server/network"] = [{ ".id": "*N1", address: "10.113.0.0/24", gateway: "10.113.0.1, 10.113.0.2" }];
+    const { out, code } = await cli(["dhcp", "move", "dhcp-vlan113", "10.113.0.10", "10.113.0.2", "--confirm"]);
     expect(code).toBe(2);
-    expect(out).toMatch(/^code: VALIDATION_ERROR$/m);
-    expect(router.requests).toHaveLength(0);
+    expect(out).toContain("is not a usable host address");
+    expect(writes()).toHaveLength(0);
   });
 });
 
