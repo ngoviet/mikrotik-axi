@@ -68,7 +68,19 @@ export async function runWrite(ctx: DeviceContext, op: WriteOp, confirm: boolean
     fail(`write failed: ${(e as Error).message}`, code, [...help, `Snapshot taken before the attempt: ${snapshot}`, revertHelp]);
   }
   // Bẫy "thất bại im lặng" (vd. ghi `address` của /ip/service): luôn đọc lại.
-  const mismatch = await op.verify();
+  let mismatch: string | null;
+  try {
+    mismatch = await op.verify();
+  } catch (e) {
+    // Lệnh ghi ĐÃ gửi tới router; chỉ bước đọc lại hỏng (router bận…). Không được nuốt
+    // snapshot + lệnh revert: agent cần biết trạng thái có thể đã đổi.
+    const code = (e instanceof AxiError ? e.code : "ROS_ERROR") as ErrorCode;
+    fail(`write sent but not verified: ${(e as Error).message}`, code, [
+      "The change may have been applied: check the object before retrying",
+      `Snapshot: ${snapshot}`,
+      revertHelp,
+    ]);
+  }
   if (mismatch) {
     fail(`write did not take effect: ${mismatch}`, "ROS_ERROR", [`Snapshot: ${snapshot}`, revertHelp]);
   }

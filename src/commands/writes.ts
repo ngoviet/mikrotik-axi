@@ -45,7 +45,8 @@ export async function pppoeCommand(args: string[], rt: Runtime): Promise<Record<
   }
   assertNotProtected(ctx.device, menu, before);
   const id = before[".id"] as string;
-  const carriesMain = (routes.get("main") ?? []).some((r) => r.active && r.gateway === name);
+  // So cả cổng ra thật: default đệ quy có gateway=9.9.9.9 nhưng đi qua phiên này.
+  const carriesMain = (routes.get("main") ?? []).some((r) => r.active && (r.gateway === name || r.via === name));
   const waitMs = rt.restartWaitMs ?? RESTART_WAIT_MS;
   let runningAfter = false;
 
@@ -62,7 +63,14 @@ export async function pppoeCommand(args: string[], rt: Runtime): Promise<Record<
     // Hoàn tác = bảo đảm phiên được BẬT lại (trường hợp bước bật hỏng giữa chừng).
     revert: { op: "set", menu, id, body: { disabled: "false" } },
     apply: async () => {
-      await client.set(menu, id, { disabled: "true" });
+      try {
+        await client.set(menu, id, { disabled: "true" });
+      } catch (e) {
+        // Hết giờ không có nghĩa là router chưa áp: PATCH có thể đã tắt phiên. Cố bật lại
+        // (vô hại nếu phiên vẫn đang bật) rồi mới báo lỗi gốc.
+        await client.set(menu, id, { disabled: "false" }).catch(() => undefined);
+        throw e;
+      }
       try {
         await client.set(menu, id, { disabled: "false" });
       } catch {
@@ -143,18 +151,22 @@ export async function addrListCommand(args: string[], rt: Runtime): Promise<Reco
     { ...CONFIRM_FLAG, comment: { type: "string", hint: "--comment <text>" } },
     3,
   );
-  const [sub, list, address] = positionals;
-  if ((sub !== "add" && sub !== "remove") || !list || !address) {
+  const [sub, list, rawAddress] = positionals;
+  if ((sub !== "add" && sub !== "remove") || !list || !rawAddress) {
     fail("usage: mikrotik-axi addr-list add|remove <list> <address>", "VALIDATION_ERROR", ["Run `mikrotik-axi addr-list --help`"]);
   }
   // Một địa chỉ / CIDR / dải / tên miền — KHÔNG danh sách phẩy (bẫy #3).
-  if (!/^[0-9A-Za-z.:/-]+$/.test(address)) {
-    fail(`addr-list: one address, CIDR, range or DNS name per entry, got ${address}`, "VALIDATION_ERROR", [
+  if (!/^[0-9A-Za-z.:/-]+$/.test(rawAddress)) {
+    fail(`addr-list: one address, CIDR, range or DNS name per entry, got ${rawAddress}`, "VALIDATION_ERROR", [
       "Run the command once per address",
     ]);
   }
   const ctx = await connectForWrite(global, rt);
   const menu = "/ip/firewall/address-list";
+  // Phòng thủ: host /32 trên router thật được lưu dạng trần (CCR2004 7.25.1, 2026-11-20: 0/106 mục
+  // có đuôi "/32"). Nếu RouterOS chuẩn hoá "x/32" → "x" mà ta tìm theo "x/32" thì verify báo
+  // "not found" và revert không gỡ được ⇒ luôn tìm/so theo dạng trần.
+  const address = rawAddress.replace(/\/32$/, "");
   const command = `addr-list ${sub} ${list} ${address}`;
   const comment = typeof flags["comment"] === "string" ? flags["comment"] : undefined;
   const op =

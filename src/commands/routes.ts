@@ -14,6 +14,32 @@ export interface DefaultRoute {
   active: boolean;
   dynamic: boolean;
   checkGateway: boolean;
+  /**
+   * Cổng ra thật (interface) suy từ `immediate-gw`. Default **đệ quy** (gateway là IP xa như
+   * `9.9.9.9`, resolve qua host route `9.9.9.9/32 → pppoe-out1`) có `gateway=9.9.9.9` nhưng
+   * `immediate-gw=9.9.9.9%pppoe-out1`. Hai default đệ quy cùng ra `pppoe-out1` là MỘT đường,
+   * không phải ECMP hai đường (đo CCR2004 7.25.1, 2026-11-20). Thiếu `immediate-gw` (route
+   * không active) ⇒ bằng `gateway`.
+   */
+  via: string;
+}
+
+/** `9.9.9.9%pppoe-out1` → `pppoe-out1`; `pppoe-out2` → `pppoe-out2`; rỗng → gateway. */
+export function egressOf(immediateGw: string | undefined, gateway: string): string {
+  const v = (immediateGw ?? "").split(",")[0]!.trim();
+  if (!v) return gateway;
+  const pct = v.lastIndexOf("%");
+  return pct >= 0 ? v.slice(pct + 1) : v;
+}
+
+/** Số cổng ra khác nhau của các route active (đếm đường thật, không đếm route). */
+export function activeEgress(routes: DefaultRoute[]): string[] {
+  return [...new Set(routes.filter((r) => r.active).map((r) => r.via))];
+}
+
+/** `9.9.9.9 → pppoe-out1` khi gateway là IP đệ quy; nguyên gateway khi trùng cổng ra. */
+function gatewayLabel(r: DefaultRoute, arrow = " → "): string {
+  return r.via && r.via !== r.gateway ? `${r.gateway}${arrow}${r.via}` : r.gateway;
 }
 
 /**
@@ -23,7 +49,7 @@ export interface DefaultRoute {
 export async function readDefaultRoutes(client: RosClient): Promise<Map<string, DefaultRoute[]>> {
   const rows = await client.list("/ip/route", {
     query: { "dst-address": "0.0.0.0/0" },
-    proplist: ["dst-address", "routing-table", "gateway", "distance", "active", "dynamic", "disabled", "check-gateway"],
+    proplist: ["dst-address", "routing-table", "gateway", "distance", "active", "dynamic", "disabled", "check-gateway", "immediate-gw"],
   });
   const byTable = new Map<string, DefaultRoute[]>();
   for (const r of rows) {
@@ -31,31 +57,42 @@ export async function readDefaultRoutes(client: RosClient): Promise<Map<string, 
     if (r["dst-address"] !== "0.0.0.0/0" || toBool(r["disabled"], "disabled")) continue;
     const table = r["routing-table"] || "main";
     const list = byTable.get(table) ?? [];
+    const gateway = r["gateway"] ?? "?";
     list.push({
       table,
-      gateway: r["gateway"] ?? "?",
+      gateway,
       distance: r["distance"] ?? "?",
       active: toBool(r["active"], "active"),
       dynamic: toBool(r["dynamic"], "dynamic"),
       checkGateway: Boolean(r["check-gateway"]),
+      via: egressOf(r["immediate-gw"], gateway),
     });
     byTable.set(table, list);
   }
   return byTable;
 }
 
-/** "pppoe-out1 (1 active of 40)" — chỉ bảng main. */
+/**
+ * "pppoe-out1 (1 active of 40)" — chỉ bảng main. Default đệ quy cùng một cổng ra:
+ * "pppoe-out1 via 9.9.9.9, 208.67.222.222 (2 active of 42)".
+ */
 export function mainDefaultLine(byTable: Map<string, DefaultRoute[]>): string {
   const main = byTable.get("main") ?? [];
   if (main.length === 0) return "none (no default route in table main)";
   const active = main.filter((r) => r.active);
-  const gws = active.length ? active.map((r) => r.gateway).join(", ") : "none active";
-  return `${gws} (${active.length} active of ${main.length})`;
+  const tail = `(${active.length} active of ${main.length})`;
+  if (active.length === 0) return `none active ${tail}`;
+  const egress = activeEgress(main);
+  // Chỉ gộp khi NHIỀU default cùng một cổng ra; một default đơn (switch: 192.168.100.1) giữ nguyên.
+  if (active.length > 1 && egress.length === 1 && active.some((r) => r.gateway !== r.via)) {
+    return `${egress[0]} via ${active.map((r) => r.gateway).join(", ")} ${tail}`;
+  }
+  return `${active.map((r) => (egress.length > 1 ? gatewayLabel(r) : r.gateway)).join(", ")} ${tail}`;
 }
 
 export const ROUTES_HELP = `usage: mikrotik-axi routes defaults [--table <name>] [flags]
        mikrotik-axi routes rules [flags]
-description: \`routes defaults\` summarises default routes PER routing-table (never merged) and warns on tables with 0 or >1 active; \`--table\` lists that table's routes. \`routes rules\` lists /routing/rule and marks rules whose source a mangle mark-routing already decides (mangle wins over /routing/rule)
+description: \`routes defaults\` summarises default routes PER routing-table (never merged) and warns on tables whose active defaults egress via 0 or >1 interfaces (a recursive default such as 9.9.9.9 resolved over pppoe-out1 counts as pppoe-out1); \`--table\` lists that table's routes (\`--fields gateway,via,active\` shows the egress). \`routes rules\` lists /routing/rule and marks rules whose source a mangle mark-routing already decides (mangle wins over /routing/rule)
 flags[4]:
   --table <name>: routes of one table (e.g. main)
   --fields a,b: columns
@@ -64,7 +101,7 @@ flags[4]:
 `;
 
 const RULE_FIELDS = ["idx", "src_address", "dst_address", "routing_mark", "interface", "action", "table", "disabled", "comment", "decided_by_mangle"];
-const ROUTE_FIELDS = ["gateway", "distance", "active", "dynamic", "check_gateway"];
+const ROUTE_FIELDS = ["gateway", "distance", "active", "dynamic", "check_gateway", "via"];
 const TABLE_FIELDS = ["table", "routes", "active", "gateway"];
 
 export async function routesCommand(args: string[], rt: Runtime): Promise<Record<string, unknown>> {
@@ -96,7 +133,7 @@ function oneTable(byTable: Map<string, DefaultRoute[]>, table: string, global: F
     ]);
   }
   const rows = routes
-    .map((r) => ({ gateway: r.gateway, distance: Number(r.distance), active: r.active, dynamic: r.dynamic, check_gateway: r.checkGateway }))
+    .map((r) => ({ gateway: r.gateway, distance: Number(r.distance), active: r.active, dynamic: r.dynamic, check_gateway: r.checkGateway, via: r.via }))
     .sort((a, b) => Number(b.active) - Number(a.active) || a.distance - b.distance || naturalCompare(a.gateway, b.gateway));
   const { out, help } = renderList(
     {
@@ -108,10 +145,10 @@ function oneTable(byTable: Map<string, DefaultRoute[]>, table: string, global: F
     },
     global,
   );
-  const active = rows.filter((r) => r.active);
+  const active = routes.filter((r) => r.active);
   return {
     table,
-    active: active.length ? active.map((r) => r.gateway).join(", ") : "none",
+    active: active.length ? active.map((r) => gatewayLabel(r)).join(", ") : "none",
     ...out,
     ...(rows.some((r) => r.dynamic)
       ? { note: "dynamic routes come from pppoe-client: change default-route-distance there, not on the route" }
@@ -125,16 +162,20 @@ function allTables(byTable: Map<string, DefaultRoute[]>, global: Flags): Record<
     .sort(([a], [b]) => (a === "main" ? -1 : b === "main" ? 1 : naturalCompare(a, b)))
     .map(([t, rs]) => {
       const active = rs.filter((r) => r.active);
-      return { table: t, routes: rs.length, active: active.length, gateway: active.map((r) => r.gateway).join(" ") || "-" };
+      const egress = activeEgress(rs).length;
+      return { table: t, routes: rs.length, active: active.length, gateway: active.map((r) => gatewayLabel(r, "→")).join(" ") || "-", egress };
     });
-  const bad = rows.filter((r) => r.active !== 1).map((r) => `${r.table} (${r.active} active)`);
+  // Cảnh báo theo số CỔNG RA, không theo số route: 2 default đệ quy cùng ra pppoe-out1 là bình thường.
+  const bad = rows
+    .filter((r) => r.egress !== 1)
+    .map((r) => (r.active > 1 ? `${r.table} (${r.active} active via ${r.egress} interfaces)` : `${r.table} (${r.active} active)`));
   const { out, help } = renderList(
     { key: "tables", rows, fields: TABLE_FIELDS, available: TABLE_FIELDS, command: "mikrotik-axi routes defaults" },
     global,
   );
   return {
     main: mainDefaultLine(byTable),
-    warnings: bad.length ? bad.join(", ") : "none (every table has exactly 1 active default)",
+    warnings: bad.length ? bad.join(", ") : "none (every table has exactly 1 active egress)",
     ...out,
     help: [...help, "Run `mikrotik-axi routes defaults --table main` for the routes of one table"],
   };

@@ -49,6 +49,45 @@ export function saveSnapshot(root: string, snap: Omit<Snapshot, "version" | "cre
   return path;
 }
 
+/**
+ * Phép hoàn tác mà tool TỰ sinh — tệp snapshot là JSON sửa tay được, nên `revert` chỉ nhận đúng
+ * các dạng này. Không có danh sách ⇒ `revert` thành lối ghi tuỳ ý vào menu bất kỳ (§3.2 cấm).
+ * set: menu → các khoá body được phép. add/remove: chỉ address-list.
+ */
+const REVERTIBLE_SET: Record<string, readonly string[]> = {
+  "/ip/firewall/filter": ["disabled"],
+  "/ip/firewall/nat": ["disabled"],
+  "/ip/firewall/mangle": ["disabled"],
+  "/ip/firewall/raw": ["disabled"],
+  "/interface/pppoe-client": ["disabled"],
+  "/ip/dhcp-server/lease": ["address"],
+};
+const REVERTIBLE_LIST = "/ip/firewall/address-list";
+const ROS_ID = /^\*[0-9A-Fa-f]+$/;
+
+function stringBody(b: unknown, allowed?: readonly string[]): boolean {
+  if (!b || typeof b !== "object" || Array.isArray(b)) return false;
+  return Object.entries(b).every(([k, v]) => typeof v === "string" && !k.startsWith(".") && (!allowed || allowed.includes(k)));
+}
+
+function validRevert(r: unknown): r is RevertSpec {
+  const x = r as Record<string, unknown> | undefined;
+  switch (x?.["op"]) {
+    case "none":
+      return typeof x["reason"] === "string";
+    case "set": {
+      const keys = REVERTIBLE_SET[x["menu"] as string];
+      return !!keys && typeof x["id"] === "string" && ROS_ID.test(x["id"]) && stringBody(x["body"], keys);
+    }
+    case "add":
+      return x["menu"] === REVERTIBLE_LIST && stringBody(x["body"]) && stringBody(x["match"], ["list", "address"]);
+    case "remove":
+      return x["menu"] === REVERTIBLE_LIST && stringBody(x["match"], ["list", "address"]);
+    default:
+      return false;
+  }
+}
+
 export function loadSnapshot(path: string): Snapshot {
   let data: unknown;
   try {
@@ -57,12 +96,13 @@ export function loadSnapshot(path: string): Snapshot {
     fail(`cannot read snapshot ${path}: ${(e as Error).message}`, "VALIDATION_ERROR");
   }
   const s = data as Partial<Snapshot>;
-  const r = s.revert as Partial<RevertSpec> | undefined;
-  const okRevert =
-    r?.op === "none" ||
-    ((r?.op === "set" || r?.op === "add" || r?.op === "remove") && typeof (r as { menu?: unknown }).menu === "string");
-  if (s.version !== 1 || typeof s.device !== "string" || typeof s.identity !== "string" || !okRevert) {
+  if (s.version !== 1 || typeof s.device !== "string" || typeof s.identity !== "string" || !s.revert) {
     fail(`not a mikrotik-axi snapshot: ${path}`, "VALIDATION_ERROR");
+  }
+  if (!validRevert(s.revert)) {
+    fail(`snapshot ${path} holds a revert this tool never produces: refusing (snapshots can be edited by hand)`, "VALIDATION_ERROR", [
+      "Revertible: disabled on firewall rules / pppoe-client, address on DHCP leases, address-list add/remove",
+    ]);
   }
   return s as Snapshot;
 }

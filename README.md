@@ -141,7 +141,7 @@ help[2]: Run `mikrotik-axi fw mangle check` to audit rule order,Run `mikrotik-ax
 | `devices` | every profile device: identity check, version, reachability |
 | `health` | board, version, uptime, CPU, memory, temperature, update status |
 | `wan [ips]` | PPPoE sessions per physical line; public IP per session, shared IPs flagged |
-| `routes defaults [--table t]` | default routes **per routing table**, tables with 0 or >1 active |
+| `routes defaults [--table t]` | default routes **per routing table**, tables whose active defaults egress via 0 or >1 interfaces (recursive gateways resolved) |
 | `routes rules` | `/routing/rule`, marking rules a mangle `mark-routing` already decides |
 | `dhcp [leases <server>]` | servers, bound/total, pool usage (≥ 90% flagged) |
 | `vlans`, `iface [--type …]` | VLANs with addresses; interfaces with counters |

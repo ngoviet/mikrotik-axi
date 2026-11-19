@@ -19,3 +19,6 @@ build/
 # File kiểm kê do công cụ khác ghi vào thư mục này — không thuộc repo
 _inventory.txt
 bench/raw/
+
+# Lavish review pages (local only)
+.lavish/

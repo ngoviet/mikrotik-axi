@@ -51,7 +51,7 @@ truncation) and `--help`. Lists longer than 50 rows print `count: 50 of N total`
 | id | Fires when |
 | --- | --- |
 | `pppoe-down` | fewer PPPoE sessions running than expected (profile expect.pppoe_running, else all enabled) |
-| `main-default` | table main does not have exactly one active default, or its gateway differs from expect.main_default_gateway |
+| `main-default` | active defaults of table main do not egress via exactly one interface (recursive defaults resolved), or it differs from expect.main_default_gateway |
 | `no-netwatch` | on PPPoE routers: nothing would notice the main default losing the Internet behind a live session |
 | `mss-order` | a change-mss rule sits after the first accept of its mangle chain and never runs |
 | `mss-raise` | numeric new-mss without a tcp-mss filter raises smaller MSS values |
