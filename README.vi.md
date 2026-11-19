@@ -138,7 +138,7 @@ help[2]: Run `mikrotik-axi fw mangle check` to audit rule order,Run `mikrotik-ax
 | `devices` | mọi thiết bị trong profile: kiểm tra identity, phiên bản, có kết nối được không |
 | `health` | board, phiên bản, uptime, CPU, bộ nhớ, nhiệt độ, trạng thái cập nhật |
 | `wan [ips]` | phiên PPPoE theo từng đường vật lý; IP public của từng phiên, đánh dấu IP bị dùng chung |
-| `routes defaults [--table t]` | default route **theo từng routing table**, các table có 0 hoặc >1 route active |
+| `routes defaults [--table t]` | default route **theo từng routing table**, các table mà default active ra qua 0 hoặc >1 cổng (gateway đệ quy được quy về cổng ra thật) |
 | `routes rules` | `/routing/rule`, các rule đánh dấu mà mangle `mark-routing` đã quyết định rồi |
 | `dhcp [leases <server>]` | server, số bound/tổng, mức dùng pool (≥ 90% bị đánh dấu) |
 | `vlans`, `iface [--type …]` | VLAN kèm địa chỉ; interface kèm bộ đếm |

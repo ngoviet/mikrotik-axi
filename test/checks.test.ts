@@ -34,11 +34,32 @@ describe("alerts on the CCR2004 fixture (mirrors the documented real state)", ()
     const two = await alertIds((ds) => {
       (ds["/ip/route"] as Rows).find((r) => r["gateway"] === "pppoe-out2" && r["routing-table"] === "main")!["active"] = "true";
     });
-    expect(two.out).toContain("main-default,table main has 2 active default routes (expected 1)");
+    expect(two.out).toContain("main-default,table main has 2 active default routes via 2 interfaces (expected 1)");
 
     const profile = structuredClone(TEST_PROFILE) as typeof TEST_PROFILE & { devices: { ccr2004: { expect?: object } } };
     profile.devices.ccr2004.expect = { main_default_gateway: "pppoe-out9" };
     expect((await alertIds(undefined, profile)).out).toContain("main-default,\"main default via pppoe-out1, expected pppoe-out9\"");
+  });
+
+  it("main-default counts egress interfaces: two recursive defaults via one session are one path", async () => {
+    const recursive = (ds: Dataset, secondVia = "pppoe-out1") => {
+      const routes = ds["/ip/route"] as Rows;
+      routes.find((r) => r["gateway"] === "pppoe-out1" && r["routing-table"] === "main")!["active"] = "false";
+      routes.push(
+        { ".id": "*90001", "dst-address": "0.0.0.0/0", gateway: "9.9.9.9", "immediate-gw": "9.9.9.9%pppoe-out1", distance: "1", "routing-table": "main", active: "true", dynamic: "false", disabled: "false", "check-gateway": "ping" },
+        { ".id": "*90002", "dst-address": "0.0.0.0/0", gateway: "208.67.222.222", "immediate-gw": `208.67.222.222%${secondVia}`, distance: "1", "routing-table": "main", active: "true", dynamic: "false", disabled: "false", "check-gateway": "ping" },
+      );
+    };
+    const one = await alertIds((ds) => recursive(ds));
+    expect(one.ids).not.toContain("main-default");
+    expect(one.out).toContain('main_default: "pppoe-out1 via 9.9.9.9, 208.67.222.222 (2 active of 42)"');
+
+    const split = await alertIds((ds) => recursive(ds, "pppoe-out2"));
+    expect(split.out).toContain("main-default,table main has 2 active default routes via 2 interfaces (expected 1)");
+
+    const profile = structuredClone(TEST_PROFILE) as typeof TEST_PROFILE & { devices: { ccr2004: { expect?: object } } };
+    profile.devices.ccr2004.expect = { main_default_gateway: "pppoe-out1" };
+    expect((await alertIds((ds) => recursive(ds), profile)).ids).not.toContain("main-default");
   });
 
   it("no-netwatch clears once an enabled netwatch exists", async () => {

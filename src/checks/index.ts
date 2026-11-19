@@ -1,4 +1,4 @@
-import type { DefaultRoute } from "../commands/routes.js";
+import { activeEgress, type DefaultRoute } from "../commands/routes.js";
 import type { Health } from "../commands/health.js";
 import type { WanSummary } from "../commands/wan.js";
 import type { DeviceProfile } from "../config/profile.js";
@@ -57,17 +57,24 @@ export const RULES: readonly Rule[] = [
   },
   {
     id: "main-default",
-    summary: "table main does not have exactly one active default, or its gateway differs from expect.main_default_gateway",
+    summary: "active defaults of table main do not egress via exactly one interface (recursive defaults resolved), or it differs from expect.main_default_gateway",
     needs: ["routes"],
     run: ({ routes }, device) => {
       const main = routes.get("main") ?? [];
       // Thiết bị không có default nào (switch L2 thuần) và profile không kỳ vọng gì ⇒ bỏ qua.
       if (main.length === 0 && !device.expect?.main_default_gateway) return null;
       const active = main.filter((r) => r.active);
-      if (active.length !== 1) return `table main has ${active.length} active default routes (expected 1)`;
+      // Đếm CỔNG RA, không đếm route: 2 default đệ quy (9.9.9.9, 208.67.222.222) cùng resolve
+      // ra pppoe-out1 là một đường có dự phòng kiểm tra, không phải 2 default.
+      const egress = activeEgress(main);
+      if (egress.length !== 1) {
+        return active.length > 1
+          ? `table main has ${active.length} active default routes via ${egress.length} interfaces (expected 1)`
+          : `table main has ${active.length} active default routes (expected 1)`;
+      }
       const want = device.expect?.main_default_gateway;
-      const got = active[0]!.gateway;
-      return want && got !== want ? `main default via ${got}, expected ${want}` : null;
+      if (!want || egress[0] === want || active.some((r) => r.gateway === want)) return null;
+      return `main default via ${egress[0]}, expected ${want}`;
     },
   },
   {

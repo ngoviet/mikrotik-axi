@@ -27,7 +27,8 @@ export { AxiError };
 const MASK = "***";
 
 // URL có mật khẩu: scheme://user:pass@host ⇒ giữ scheme, user, host; che pass.
-const URL_PASSWORD = /\b([a-z][a-z0-9+.-]*:\/\/[^\s/?#@:"'\\]*:)([^\s/?#@"'\\]+)@/gi;
+// Mật khẩu có thể chứa "@": ăn tới "@" CUỐI trước host (host không có "@").
+const URL_PASSWORD = /\b([a-z][a-z0-9+.-]*:\/\/[^\s/?#@:"'\\]*:)([^\s/?#"'\\]+)@(?=[^\s/?#@"'\\]*(?:[\s/?#"'\\]|$))/gi;
 // Header Authorization: giữ tên lược đồ (Bearer, Basic…), che phần chứng thực.
 const AUTH_HEADER = /(\bauthorization\\?["']?\s*[:=]\s*\\?["']?\s*)(?:(bearer|basic|digest|token|apikey)\s+)?([^\s,;"'\\]+)/gi;
 // "Bearer <token>" đứng riêng, không có chữ Authorization phía trước.
@@ -36,7 +37,7 @@ const BEARER = /(\bbearer\s+)([^\s,;"'\\*][^\s,;"'\\]*)/gi;
 // client-secret, pre-shared-key, cfToken. Giá trị: trong nháy (kể cả nháy thoát \" của nguồn script)
 // hoặc trần tới khoảng trắng / , ; & } ] (ranh giới trong query string, JSON, header gộp).
 const SECRET_PAIR =
-  /((?:password|passwd|passphrase|pass|pwd|secret|token|key)\\?["']?\s*[:=]\s*)(\\?"[^"\\]*(?:\\?")?|'[^']*'?|[^\s,;&"'}\]\\]+)/gi;
+  /((?:password|passwd|passphrase|pass|pwd|secret|token|key)\\?["']?\s*[:=]\s*)(\\?"(?:[^"\\]|\\[^"])*(?:\\?")?|'[^']*'?|[^\s,;&"'}\]\\]+)/gi;
 
 /** Che phần ruột của giá trị, giữ nguyên dấu nháy bao quanh. Giá trị rỗng giữ nguyên (rỗng là thông tin chẩn đoán). */
 function maskValue(value: string): string {

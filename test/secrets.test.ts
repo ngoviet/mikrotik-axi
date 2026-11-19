@@ -92,6 +92,17 @@ describe("maskSecrets: generic patterns", () => {
     expect(maskSecrets(once)).toBe(once);
     for (const s of [CF_TOKEN, PASS]) expect(once).not.toContain(s);
   });
+
+  it("does not leak the tail of a quoted value containing a backslash escape", () => {
+    expect(maskSecrets(`password="ab\\$cdSECRET" x=1`)).toBe(`password="***" x=1`);
+    // Dạng nháy thoát của nguồn script vẫn dừng đúng ở \" đóng.
+    expect(maskSecrets(`secret=\\"ab\\$cdSECRET\\" next=1`)).toBe(`secret=\\"***\\" next=1`);
+  });
+
+  it("masks a URL password that contains @ up to the last @ before the host", () => {
+    expect(maskSecrets("get ftp://bob:p@ssSECRET@host.example/file failed")).toBe("get ftp://bob:***@host.example/file failed");
+    expect(maskSecrets("mail to a@b.example via https://u:pw@h.example")).toBe("mail to a@b.example via https://u:***@h.example");
+  });
 });
 
 describe("redact reuses the same masking", () => {

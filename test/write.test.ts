@@ -2,6 +2,7 @@ import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } fro
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
+import { TransportError } from "../src/ros/transport.js";
 import { portSpecIncludes } from "../src/write/protected.js";
 import { sameValue } from "../src/write/ops.js";
 import type { Dataset, FakeRouter } from "./helpers/fake-router.js";
@@ -180,6 +181,14 @@ describe("pppoe restart", () => {
     expect(out).toMatch(/^verified: disabled=false; running=true$/m);
   });
 
+  it("warns when the main default is recursive (gateway is a remote IP) but egresses via this session", async () => {
+    const routes = ds["/ip/route"] as Rows;
+    routes.find((r) => r["gateway"] === "pppoe-out1" && r["routing-table"] === "main")!["active"] = "false";
+    routes.push({ ".id": "*90001", "dst-address": "0.0.0.0/0", gateway: "9.9.9.9", "immediate-gw": "9.9.9.9%pppoe-out1", distance: "1", "routing-table": "main", active: "true", dynamic: "false", disabled: "false" });
+    expect((await cli(["pppoe", "restart", "pppoe-out1"])).out).toContain("pppoe-out1 carries the active main default route");
+    expect((await cli(["pppoe", "restart", "pppoe-out2"])).out).not.toContain("carries the active main default");
+  });
+
   it("refuses disabled and unknown sessions", async () => {
     expect((await cli(["pppoe", "restart", "pppoe-out241"])).out).toContain("is disabled");
     expect((await cli(["pppoe", "restart", "pppoe-out99"])).code).toBe(2);
@@ -301,6 +310,68 @@ describe("revert safety", () => {
     (ds["/ip/firewall/filter"] as Rows).find((r) => r["comment"] === "drop invalid")!["password"] = "hunter2";
     const applied = await cli(["fw", "filter", "disable", ISOLATE(), "--confirm"]);
     expect(readFileSync(snapshotPath(applied.out), "utf8")).not.toContain("hunter2");
+  });
+
+  it("refuses hand-edited snapshots whose revert the tool never produces", async () => {
+    const applied = await cli(["fw", "filter", "disable", ISOLATE(), "--confirm"]);
+    const snap = snapshotPath(applied.out);
+    const saved = JSON.parse(readFileSync(snap, "utf8"));
+    const forged: unknown[] = [
+      { op: "set", menu: "/ip/service", id: "*386", body: { disabled: "false" } },
+      { op: "set", menu: "/ip/firewall/filter", id: saved.revert.id, body: { action: "accept" } },
+      { op: "set", menu: "/ip/firewall/filter", id: "..", body: { disabled: "false" } },
+      { op: "add", menu: "/ip/firewall/filter", body: { chain: "input", action: "accept" }, match: { list: "x", address: "1.2.3.4" } },
+      { op: "remove", menu: "/ip/firewall/nat", match: { list: "x" } },
+      { op: "remove", menu: "/ip/firewall/address-list", match: { list: "MGMT" } },
+    ];
+    for (const revert of forged) {
+      writeFileSync(snap, JSON.stringify({ ...saved, revert }));
+      const { code, out } = await cli(["revert", snap, "--confirm"]);
+      expect(code).toBe(2);
+      expect(out).toContain("holds a revert this tool never produces");
+    }
+    expect(writes()).toHaveLength(1); // chỉ lần disable ban đầu
+  });
+});
+
+describe("failures after the write was sent", () => {
+  it("a read-back timeout still prints the snapshot and the revert command", async () => {
+    const id = ISOLATE();
+    let wrote = false;
+    const transport: FakeRouter["transport"] = async (req) => {
+      if (wrote && req.method === "GET" && req.url.pathname.startsWith("/rest/ip/firewall/filter/")) {
+        throw new TransportError("timeout", "timeout");
+      }
+      const res = await router.transport(req);
+      if (req.method === "PATCH") wrote = true;
+      return res;
+    };
+    const { code, out } = await cli(["fw", "filter", "disable", id, "--confirm"], { transport });
+    expect(code).toBe(1);
+    expect(out).toContain("write sent but not verified");
+    expect(out).toContain("mikrotik-axi revert");
+    expect(filterRule(id)["disabled"]).toBe("true");
+  });
+
+  it("pppoe restart re-enables the session when the disable step times out after applying", async () => {
+    const transport: FakeRouter["transport"] = async (req) => {
+      const res = await router.transport(req);
+      if (req.method === "PATCH" && req.body?.includes('"disabled":"true"')) throw new TransportError("timeout", "timeout");
+      return res;
+    };
+    const { code } = await cli(["pppoe", "restart", "pppoe-out17", "--confirm"], { transport });
+    expect(code).toBe(1);
+    const s = (ds["/interface/pppoe-client"] as Rows).find((r) => r["name"] === "pppoe-out17")!;
+    expect(s["disabled"]).toBe("false");
+  });
+
+  it("addr-list normalises a /32 host so verify and revert find the entry", async () => {
+    const add = await cli(["addr-list", "add", "AXI_TEST", "192.0.2.9/32", "--confirm"]);
+    expect(add.code).toBe(0);
+    const rows = (ds["/ip/firewall/address-list"] as Rows).filter((r) => r["list"] === "AXI_TEST");
+    expect(rows).toEqual([expect.objectContaining({ address: "192.0.2.9" })]);
+    expect((await cli(["revert", snapshotPath(add.out), "--confirm"])).code).toBe(0);
+    expect((ds["/ip/firewall/address-list"] as Rows).filter((r) => r["list"] === "AXI_TEST")).toHaveLength(0);
   });
 });
 
