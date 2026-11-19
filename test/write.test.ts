@@ -322,6 +322,7 @@ describe("revert safety", () => {
       { op: "set", menu: "/ip/firewall/filter", id: "..", body: { disabled: "false" } },
       { op: "add", menu: "/ip/firewall/filter", body: { chain: "input", action: "accept" }, match: { list: "x", address: "1.2.3.4" } },
       { op: "remove", menu: "/ip/firewall/nat", match: { list: "x" } },
+      { op: "remove", menu: "/ip/firewall/address-list", match: { list: "MGMT" } },
     ];
     for (const revert of forged) {
       writeFileSync(snap, JSON.stringify({ ...saved, revert }));

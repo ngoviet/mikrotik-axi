@@ -70,6 +70,11 @@ function stringBody(b: unknown, allowed?: readonly string[]): boolean {
   return Object.entries(b).every(([k, v]) => typeof v === "string" && !k.startsWith(".") && (!allowed || allowed.includes(k)));
 }
 
+/** match của address-list phải đủ ĐÚNG list + address: thiếu một khoá ⇒ có thể khớp entry khác. */
+function listMatch(m: unknown): boolean {
+  return stringBody(m, ["list", "address"]) && Object.keys(m as object).length === 2;
+}
+
 function validRevert(r: unknown): r is RevertSpec {
   const x = r as Record<string, unknown> | undefined;
   switch (x?.["op"]) {
@@ -80,9 +85,9 @@ function validRevert(r: unknown): r is RevertSpec {
       return !!keys && typeof x["id"] === "string" && ROS_ID.test(x["id"]) && stringBody(x["body"], keys);
     }
     case "add":
-      return x["menu"] === REVERTIBLE_LIST && stringBody(x["body"]) && stringBody(x["match"], ["list", "address"]);
+      return x["menu"] === REVERTIBLE_LIST && stringBody(x["body"]) && listMatch(x["match"]);
     case "remove":
-      return x["menu"] === REVERTIBLE_LIST && stringBody(x["match"], ["list", "address"]);
+      return x["menu"] === REVERTIBLE_LIST && listMatch(x["match"]);
     default:
       return false;
   }
