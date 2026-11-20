@@ -161,7 +161,8 @@ describe.skipIf(!enabled)("CHR (MIKROTIK_AXI_CHR=1)", () => {
   it("pppoe restart on a client that dials nowhere: re-enabled, reported as not running", () => {
     const r = run(["pppoe", "restart", fixture.pppoe, "--confirm"]);
     expect(r.code, r.out).toBe(0);
-    expect(r.out).toMatch(/^verified: disabled=false; running=false/m);
+    // TOON quotes the value: it holds ";" and backticks.
+    expect(r.out).toMatch(/^verified: "?disabled=false; running=false/m);
   }, 60_000);
 
   it("ping/traceroute need the test policy; with it they run from the router", () => {
@@ -173,9 +174,12 @@ describe.skipIf(!enabled)("CHR (MIKROTIK_AXI_CHR=1)", () => {
     expect(ping.code, ping.out).toBe(0);
     expect(ping.out).toMatch(/^result: "?\d\/2 replies/m);
 
+    // The gateway is directly connected: one hop, itself, with a numeric RTT in ms (CI 2026-11-21 showed
+    // RouterOS returns `last` as a bare number, which the first version printed as "0").
     const trace = run(["traceroute", fixture.gateway], asPingUser());
     expect(trace.code, trace.out).toBe(0);
-    expect(trace.out).toMatch(/^summary: /m);
+    expect(trace.out).toMatch(/^summary: "?1 hops, destination reached"?$/m);
+    expect(trace.out).toMatch(new RegExp(`^ {2}1,${fixture.gateway.replace(/\./g, "\\.")},0%,"?\\d+(\\.\\d+)? ms"?$`, "m"));
 
     const each = run(["ping", fixture.gateway, "--each-wan"], asPingUser());
     expect(each.code).toBe(2);

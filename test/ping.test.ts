@@ -110,6 +110,12 @@ describe("traceroute", () => {
     expect(r.out).toContain("1,10.0.0.1,0%,1 ms");
   });
 
+  it("RouterOS returns last/avg as bare numbers in ms (seen on CHR 7.25.1 in CI)", () => {
+    expect(hopsFrom([{ address: "10.0.2.2", loss: "0", last: "0" }])).toEqual([{ hop: 1, address: "10.0.2.2", loss: "0%", rtt: "0 ms" }]);
+    expect(hopsFrom([{ address: "10.0.2.2", loss: "0", last: "1.5", avg: "1.2" }])[0]!.rtt).toBe("1.5 ms");
+    expect(hopsFrom([{ address: "10.0.2.2", loss: "0", avg: "3" }])[0]!.rtt).toBe("3 ms");
+  });
+
   it("a hop whose last probe timed out shows timeout", () => {
     expect(hopsFrom([{ address: "", loss: "100", last: "timeout" }])).toEqual([{ hop: 1, address: "*", loss: "100%", rtt: "timeout" }]);
   });

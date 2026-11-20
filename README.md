@@ -160,7 +160,7 @@ help[2]: Run `mikrotik-axi fw mangle check` to audit rule order,Run `mikrotik-ax
 | `log [--topic t] [--since 1h] [--grep re]` | recent log; `--since` uses the router's clock |
 | `ping <address> [--interface i] [--src-address a] [--count n]` | ping **from the router**, through the path you choose (RouterOS ping has no routing-table argument: to test a policy table, use a `--src-address` a routing rule sends there) |
 | `ping <address> --each-wan` | one ping through every running PPPoE session; lists the sessions that run but get no reply (ISP route lost) |
-| `traceroute <address> [--interface i]` | traceroute from the router (not yet verified on a live router) |
+| `traceroute <address> [--interface i]` | traceroute from the router: hop, address, loss, RTT |
 | `export [--section /ip/firewall]` | saves `/export terse` to a local `.rsc`; prints only path, sha256, line count and whether it changed since the last save |
 | `export diff [--section …] [--against f]` | what changed since the last saved export: +/- lines per menu, menus whose order changed. Code-bearing fields (`source`, any `*-script`, any `on-*`) and anything that looks like script print as length (+ hash) only; `cmd`/`entrypoint`/`value` as length; secret-like keys (`password`, `secret(s)`, `key`, `psk`, `pin`, `token`…) as `<redacted>`; lines that do not parse are never printed; other values get best-effort secret masking |
 

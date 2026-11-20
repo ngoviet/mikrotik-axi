@@ -157,7 +157,7 @@ help[2]: Run `mikrotik-axi fw mangle check` to audit rule order,Run `mikrotik-ax
 | `log [--topic t] [--since 1h] [--grep re]` | log gần đây; `--since` tính theo đồng hồ của router |
 | `ping <address> [--interface i] [--src-address a] [--count n]` | ping **từ router**, qua đường bạn chọn (ping của RouterOS không có tham số routing-table: muốn thử một bảng policy thì dùng `--src-address` mà một routing rule đưa vào bảng đó) |
 | `ping <address> --each-wan` | mỗi phiên PPPoE đang chạy một gói ping; liệt kê các phiên vẫn chạy mà không nhận được trả lời (mất định tuyến phía nhà mạng) |
-| `traceroute <address> [--interface i]` | traceroute từ router (chưa kiểm trên router thật) |
+| `traceroute <address> [--interface i]` | traceroute từ router: hop, địa chỉ, tỉ lệ mất gói, RTT |
 | `export [--section /ip/firewall]` | lưu `/export terse` ra một file `.rsc` trên máy; chỉ in đường dẫn, sha256, số dòng và có đổi so với lần lưu trước hay không |
 | `export diff [--section …] [--against f]` | những gì đã đổi kể từ bản export lưu gần nhất: dòng +/- theo menu, các menu bị đổi thứ tự. Trường mang mã (`source`, mọi `*-script`, mọi `on-*`) và mọi thứ trông như script chỉ in độ dài (+ mã băm); `cmd`/`entrypoint`/`value` chỉ in độ dài; khoá dạng bí mật (`password`, `secret(s)`, `key`, `psk`, `pin`, `token`…) in `<redacted>`; dòng không phân tích được thì không bao giờ in; các giá trị còn lại được che bí mật ở mức cố gắng tốt nhất |
 

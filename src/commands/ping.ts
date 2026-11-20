@@ -35,7 +35,7 @@ examples[3]:
 `;
 
 export const TRACEROUTE_HELP = `usage: mikrotik-axi traceroute <address> [--interface <name>] [--src-address a] [flags]
-description: Traceroute FROM the router, one probe per hop (count=1, max 30 hops). Needs the \`test\` policy on the user. Not yet verified on a live router (no read user had \`test\` when it was written): report odd output. ${POLICY_TABLE_TIP}
+description: Traceroute FROM the router, one probe per hop (count=1, max 30 hops). Needs the \`test\` policy on the user. Checked in CI against RouterOS CHR 7.25.1 (RTT in ms). ${POLICY_TABLE_TIP}
 flags[3]:
   --interface <name>: send the probes out of this interface
   --src-address <a>: source address
@@ -189,24 +189,32 @@ export interface Hop {
   rtt: string;
 }
 
+/** RTT của traceroute: CLI reference ghi `last`/`avg` kiểu `num` (mili-giây, số trần); chuỗi thời lượng có đơn vị vẫn nhận. */
+function hopRtt(v: string | undefined): string | undefined {
+  if (v === undefined || v === "") return undefined;
+  if (/^\d+(\.\d+)?$/.test(v)) return `${v} ms`;
+  const t = ms(v);
+  return t === undefined ? undefined : `${t} ms`;
+}
+
 /**
  * Bảng hop từ phản hồi traceroute. Lệnh báo tiến độ ⇒ có thể nhận NHIỀU bản chụp bảng (đánh số
  * `.section`, manual: "Commands that report progress … number their replies in .section") ⇒ chỉ lấy
- * bản chụp cuối. Chưa đo trên router thật: đọc trường thận trọng (address/loss/last|avg/status).
+ * bản chụp cuối. Đo trên RouterOS CHR 7.25.1 (CI, 2026-11-21): `last` là số trần (bản đầu in "0"
+ * vì chờ chuỗi có đơn vị như "1ms").
  */
 export function hopsFrom(records: RosRecord[]): Hop[] {
   const sections = records.map((r) => r[".section"]).filter((s) => s !== undefined);
   const last = sections.length ? sections[sections.length - 1] : undefined;
   const rows = last === undefined ? records : records.filter((r) => r[".section"] === last);
-  // CLI reference: loss = phần trăm (số), last = RTT lần cuối hoặc "timeout".
+  // CLI reference: loss = phần trăm (số), last = RTT lần cuối, bảng in "timeout" khi gói cuối không về.
   return rows.map((r, i) => {
-    const t = ms(r["last"]) ?? ms(r["avg"]);
     const loss = r["loss"];
     return {
       hop: i + 1,
       address: r["address"] || "*",
       loss: loss === undefined ? "-" : /^\d+(\.\d+)?$/.test(loss) ? `${loss}%` : loss,
-      rtt: t !== undefined ? `${t} ms` : r["last"] || r["status"] || "-",
+      rtt: hopRtt(r["last"]) ?? hopRtt(r["avg"]) ?? (r["last"] || r["status"] || "-"),
     };
   });
 }
