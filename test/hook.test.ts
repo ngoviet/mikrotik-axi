@@ -7,7 +7,7 @@ import { HOOK_MARKER } from "../src/commands/setup.js";
 import { inHookDirs, runHook } from "../src/hook.js";
 import { TransportError, type Transport } from "../src/ros/transport.js";
 import { fakeRouter, loadDataset } from "./helpers/fake-router.js";
-import { CREDS, runCli, writeProfile } from "./helpers/run.js";
+import { CREDS, runCli, TEST_PROFILE, writeProfile } from "./helpers/run.js";
 
 const env = (extra: Record<string, string> = {}) => ({
   MIKROTIK_AXI_PROFILE: writeProfile(),
@@ -38,6 +38,32 @@ describe("session hook", () => {
     });
     expect(out).toMatch(/^description: /m);
     expect(out).toMatch(/^alerts\[6\]/m);
+  });
+
+  it("credential_env_hook: the hook logs in as its own user, the CLI keeps credential_env", async () => {
+    // Router chạy tuần tự request của CÙNG user ⇒ hook nhiều phiên không được chặn CLI.
+    const profile = structuredClone(TEST_PROFILE) as { devices: Record<string, Record<string, unknown>> };
+    profile.devices["ccr2004"]!["credential_env_hook"] = { user: "AXI_HOOK_USER", pass: "AXI_HOOK_PASS" };
+    const hookCred = { user: "axi-hook", pass: "hook-pass" };
+    const router = fakeRouter(loadDataset("ccr2004"), [CREDS, hookCred]);
+    const basic = (c: { user: string; pass: string }) => `Basic ${Buffer.from(`${c.user}:${c.pass}`).toString("base64")}`;
+    let out = "";
+    await runHook({
+      env: { ...env({ AXI_HOOK_USER: hookCred.user, AXI_HOOK_PASS: hookCred.pass }), MIKROTIK_AXI_PROFILE: writeProfile(profile) },
+      cwd: "D:\\work\\netops",
+      write: (c) => (out += c),
+      transport: router.transport,
+      platform: "win32",
+    });
+    expect(out).toMatch(/^description: /m);
+    const authed = router.requests.filter((q) => q.headers["Authorization"]);
+    expect(authed.length).toBeGreaterThan(5);
+    expect(authed.every((q) => q.headers["Authorization"] === basic(hookCred))).toBe(true);
+
+    router.requests.length = 0;
+    const cli = await runCli(["health"], { transport: router.transport, profile, env: { AXI_HOOK_USER: hookCred.user, AXI_HOOK_PASS: hookCred.pass } });
+    expect(cli.code).toBe(0);
+    expect(router.requests.filter((q) => q.headers["Authorization"]).every((q) => q.headers["Authorization"] === basic(CREDS))).toBe(true);
   });
 
   it("prints nothing outside MIKROTIK_AXI_HOOK_DIRS and makes no request", async () => {

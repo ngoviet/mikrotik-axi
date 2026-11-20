@@ -1,4 +1,7 @@
 import { spawnSync } from "node:child_process";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
@@ -12,8 +15,12 @@ const live = process.env["MIKROTIK_AXI_LIVE"] === "1";
 const probeCmd = process.env["MIKROTIK_AXI_PROBE_CMD"];
 
 function run(args: string[]): { out: string; code: number | null; ms: number } {
+  return runEnv(args, {});
+}
+
+function runEnv(args: string[], extra: Record<string, string>): { out: string; code: number | null; ms: number } {
   const t0 = performance.now();
-  const r = spawnSync(process.execPath, [BIN, ...args], { encoding: "utf8", env: { ...process.env, MIKROTIK_AXI_READ_ONLY: "1" } });
+  const r = spawnSync(process.execPath, [BIN, ...args], { encoding: "utf8", env: { ...process.env, ...extra, MIKROTIK_AXI_READ_ONLY: "1" } });
   return { out: r.stdout, code: r.status, ms: performance.now() - t0 };
 }
 
@@ -39,10 +46,40 @@ const READ_COMMANDS = [
   ["fw", "raw"],
   ["fw", "mangle", "check"],
   ["services"],
+  ["audit"],
   ["log", "--since", "1h"],
 ];
 
 describe.skipIf(!live)("live read-only (MIKROTIK_AXI_LIVE=1)", () => {
+  it("export with the read-only user: two saves of one section hash the same, diff says identical", () => {
+    // Thư mục tạm riêng: không lẫn vào bản lưu thật của chủ.
+    // Xoá ngay sau test: file là cấu hình THẬT (nguồn script có thể chứa bí mật).
+    const dir = mkdtempSync(join(tmpdir(), "axi-live-export-"));
+    const env = { MIKROTIK_AXI_EXPORT_DIR: dir };
+    try {
+      const a = runEnv(["export", "--section", "/ip/firewall/filter"], env);
+      expect(a.code, a.out).toBe(0);
+      const b = runEnv(["export", "--section", "/ip/firewall/filter"], env);
+      expect(b.out).toMatch(/^changed_since_last: no$/m);
+      expect(runEnv(["export", "diff", "--section", "/ip/firewall/filter"], env).out).toMatch(/^summary: identical$/m);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  // Cần policy `test` cho user đọc (chủ thêm trên router) ⇒ bật riêng: MIKROTIK_AXI_LIVE_PING=1.
+  it.skipIf(process.env["MIKROTIK_AXI_LIVE_PING"] !== "1")("ping and traceroute from the router (needs policy test)", () => {
+    const p = run(["ping", "1.1.1.1", "--count", "2"]);
+    expect(p.code, p.out).toBe(0);
+    expect(p.out).toMatch(/^result: "\d\/2 replies/m);
+    const each = run(["ping", "1.1.1.1", "--each-wan"]);
+    expect(each.code, each.out).toBe(0);
+    expect(each.out).toMatch(/^reach: \d+\/\d+ running sessions/m);
+    const t = run(["traceroute", "1.1.1.1"]);
+    expect(t.code, t.out).toBe(0);
+    expect(t.out).toMatch(/^hops\[\d+\]\{hop,address,loss,rtt\}:/m);
+  });
+
   it("home view: identity ok, complete every time; fastest run under 1.5 s", () => {
     // Đo thật 2026-10-14: router có lúc bận và xử lý menu interface/firewall tuần tự 200–1400 ms
     // mỗi cái (PowerShell gọi tuần tự cũng thấy) ⇒ thời gian home có 2 cụm ~250 ms / ~2,2 s.

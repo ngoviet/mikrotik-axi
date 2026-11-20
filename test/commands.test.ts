@@ -69,7 +69,9 @@ describe("home view", () => {
   });
 
   it("fetches in parallel within the concurrency cap", async () => {
-    // 50 ms mỗi request. Tuần tự ~21 request ≈ 1050 ms; guard 2 lượt + ⌈19/6⌉ = 4 lượt ≈ 300 ms.
+    // 50 ms mỗi request, router giả xử lý song song (router THẬT thì tuần tự theo user — xem
+    // MAX_CONCURRENT). Tuần tự ~22 request ≈ 1100 ms; guard 2 lượt + ⌈20/2⌉ lượt ≈ 600–750 ms.
+    // Kiểm: đúng trần đồng thời và có chồng lấp (không chạy tuần tự hoàn toàn).
     const router = fakeRouter(loadDataset("ccr2004"), CREDS, { latencyMs: 50 });
     let inFlight = 0;
     let peak = 0;
@@ -87,7 +89,7 @@ describe("home view", () => {
     expect(code).toBe(0);
     expect(router.requests.length).toBeGreaterThanOrEqual(19);
     expect(peak).toBe(MAX_CONCURRENT);
-    expect(ms).toBeLessThan(router.requests.length * 50 * 0.5);
+    expect(ms).toBeLessThan(router.requests.length * 50 * 0.85);
   });
 
   it("one failing menu degrades one line, not the whole view", async () => {

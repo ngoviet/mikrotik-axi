@@ -58,6 +58,11 @@ Ba bước: tạo user RouterOS cho công cụ, viết profile, và khai báo th
 /user add name=axi-ro group=axi-read address=192.168.88.10/32 password=<long random>
 ```
 
+`ping` và `traceroute` cần thêm policy `test` (`policy=read,api,rest-api,test`); thiếu nó, hai lệnh này báo rõ
+và thoát với mã 1. Hãy biết mình cấp gì: theo manual RouterOS, `test` gồm ping, traceroute, bandwidth-test,
+wireless scan, **fetch** và **email**, nên user có policy này khiến router tải file hoặc gửi mail được. Nó không
+cấp `write`.
+
 Đối chiếu tên policy với `/user group print` trên phiên bản của bạn: sai tên thì REST trả về 401/403. Với lệnh
 ghi, thêm user thứ hai có group kèm thêm `write`. Không cho group đó các quyền `policy`, `password`, `sensitive`,
 `ftp` và `reboot`.
@@ -102,6 +107,9 @@ Các trường của profile:
 - `credential_env_write` (tuỳ chọn) đặt tên các biến của một user **có** policy `write`. Chỉ lệnh ghi dùng nó;
   lệnh đọc và session hook vẫn dùng `credential_env`, nên mật khẩu có quyền ghi không bao giờ được nạp cho một
   lệnh đọc.
+- `credential_env_hook` (tuỳ chọn) đặt tên các biến của một user **chỉ đọc** thứ hai, dành cho session hook.
+  RouterOS chạy lần lượt từng request REST của cùng một user, nên nếu dùng chung, hook của nhiều phiên agent mở
+  cùng lúc và các lệnh của chính bạn sẽ phải xếp hàng chờ nhau.
 
 ### 3. Thông tin đăng nhập
 
@@ -145,7 +153,19 @@ help[2]: Run `mikrotik-axi fw mangle check` to audit rule order,Run `mikrotik-ax
 | `fw <filter\|nat\|mangle\|raw> [--chain c]` | rule theo thứ tự xử lý, số lượng theo chain, rule chưa khớp lần nào |
 | `fw mangle check` | `change-mss` nằm sau `accept` đầu tiên, rule làm tăng MSS, mark trùng |
 | `services` | dịch vụ quản trị và ACL thực tế của chúng (`available-from`) |
+| `audit` | đánh giá bảo mật: `admin` mặc định, user có quyền ghi mà không giới hạn địa chỉ, telnet/ftp/api/www không mã hoá, PPTP hoặc L2TP không IPsec, SSH yếu, DNS mở cho mọi nơi hỏi, UPnP, SOCKS/proxy, SNMP `public`, neighbor discovery trên mọi interface, RoMON, RouterBOOT cũ hơn RouterOS |
 | `log [--topic t] [--since 1h] [--grep re]` | log gần đây; `--since` tính theo đồng hồ của router |
+| `ping <address> [--interface i] [--src-address a] [--count n]` | ping **từ router**, qua đường bạn chọn (ping của RouterOS không có tham số routing-table: muốn thử một bảng policy thì dùng `--src-address` mà một routing rule đưa vào bảng đó) |
+| `ping <address> --each-wan` | mỗi phiên PPPoE đang chạy một gói ping; liệt kê các phiên vẫn chạy mà không nhận được trả lời (mất định tuyến phía nhà mạng) |
+| `traceroute <address> [--interface i]` | traceroute từ router: hop, địa chỉ, tỉ lệ mất gói, RTT |
+| `export [--section /ip/firewall]` | lưu `/export terse` ra một file `.rsc` trên máy; chỉ in đường dẫn, sha256, số dòng và có đổi so với lần lưu trước hay không |
+| `export diff [--section …] [--against f]` | những gì đã đổi kể từ bản export lưu gần nhất: dòng +/- theo menu, các menu bị đổi thứ tự. Trường mang mã (`source`, mọi `*-script`, mọi `on-*`) và mọi thứ trông như script chỉ in độ dài (+ mã băm); `cmd`/`entrypoint`/`value` chỉ in độ dài; khoá dạng bí mật (`password`, `secret(s)`, `key`, `psk`, `pin`, `token`…) in `<redacted>`; dòng không phân tích được thì không bao giờ in; các giá trị còn lại được che bí mật ở mức cố gắng tốt nhất |
+
+`export` chạy được với user chỉ đọc. RouterOS ẩn các trường mật khẩu với user không có policy `sensitive`, nhưng mã
+nguồn script và scheduler vẫn được export nguyên văn và có thể chứa bí mật, nên hãy coi các file đã lưu là riêng tư.
+RouterOS không giữ lịch sử cấu hình, nên một bản export đã lưu là cách duy nhất để thấy ai đó đã đổi gì qua WinBox.
+Export toàn bộ cấu hình cần RouterOS 7.25 trở lên (bản cũ hơn có thể hết bộ nhớ với output lớn); trước đó hãy dùng
+`--section`.
 
 Mọi lệnh đều nhận `--device`, `--fields a,b`, `--full` và `--help`. Cờ không hợp lệ thoát với mã 2 và liệt kê các
 cờ hợp lệ. Lỗi in ra stdout dạng `error:` / `code:` / `help:`.
@@ -171,7 +191,8 @@ Mọi lệnh ghi đều đi qua cùng các bước:
    `mikrotik-axi revert <snapshot> --confirm`.
 
 Đối tượng đã ở đúng trạng thái mong muốn thì cho `result: no-op`. `MIKROTIK_AXI_READ_ONLY=1` từ chối mọi lệnh ghi.
-Không lệnh nào chạy script RouterOS tuỳ ý.
+Không lệnh nào chạy script RouterOS tuỳ ý: `export` chạy một script do chính công cụ dựng
+(`<menu>/export terse`, menu được kiểm theo `[a-z0-9-/]`).
 
 ## Tích hợp với agent
 
@@ -195,6 +216,17 @@ pnpm fixtures:record --device core          # ghi fixture đã làm sạch, ẩn
 ```
 
 Test chạy với một REST server RouterOS giả, dựng từ các fixture trong `test/fixtures/`.
+
+Workflow `CHR` còn chạy `test/chr` trên một RouterOS CHR thật, trong máy ảo QEMU dùng xong bỏ, ở mọi pull
+request: mọi lệnh đọc và mọi lệnh ghi, kể cả `pppoe restart`, `arp flush` và `dhcp move`. Tự chạy trên Linux có
+QEMU (thêm KVM cho nhanh):
+
+```sh
+CHR_SHA256=<sha256 của chr-7.25.1.img.zip> bash scripts/chr/boot.sh
+node scripts/chr/provision.mjs /tmp/chr
+MIKROTIK_AXI_CHR=1 MIKROTIK_AXI_PROFILE=/tmp/chr/profile.json MIKROTIK_AXI_ENV_FILE=/tmp/chr/creds.env \
+  MIKROTIK_AXI_CHR_FIXTURE=/tmp/chr/fixture.json pnpm test:chr
+```
 
 <!-- support:start -->
 ## Ủng hộ dự án

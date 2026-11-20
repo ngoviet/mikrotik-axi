@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { fail } from "../errors.js";
+import { AUDIT_IDS } from "../checks/audit.js";
 import { RULE_IDS } from "../checks/index.js";
 import type { Env } from "./env.js";
 
@@ -16,6 +17,12 @@ export interface DeviceProfile {
    * ⇒ quyền ghi chỉ có mặt khi thật sự ghi. Vắng ⇒ lệnh ghi dùng `credential_env`.
    */
   credential_env_write?: { user: string; pass: string };
+  /**
+   * Credential cho hook SessionStart (user chỉ đọc RIÊNG). Router chạy tuần tự request của cùng
+   * một user ⇒ hook của nhiều phiên agent mở cùng lúc và lệnh CLI xếp hàng chờ nhau nếu dùng chung.
+   * Vắng ⇒ hook dùng `credential_env`.
+   */
+  credential_env_hook?: { user: string; pass: string };
   /** Nhãn cho cổng vật lý mang PPPoE: { "ether1": "Line 1" }. Quan hệ cổng↔phiên do tool tự suy. */
   line_map?: Record<string, string>;
   expect?: { pppoe_running?: number; main_default_gateway?: string };
@@ -76,6 +83,7 @@ const DEVICE_KEYS = new Set([
   "tls",
   "credential_env",
   "credential_env_write",
+  "credential_env_hook",
   "line_map",
   "expect",
   "protected",
@@ -83,7 +91,7 @@ const DEVICE_KEYS = new Set([
   "alerts",
 ]);
 
-export function validateProfile(data: unknown, path = "profile", knownAlertIds: readonly string[] = RULE_IDS): Profile {
+export function validateProfile(data: unknown, path = "profile", knownAlertIds: readonly string[] = [...RULE_IDS, ...AUDIT_IDS]): Profile {
   const bad = (where: string, msg: string): never => fail(`invalid profile ${path}: ${where} ${msg}`, "CONFIG_ERROR");
   if (!isObject(data)) bad("root", "must be an object");
   const root = data as Record<string, unknown>;
@@ -109,7 +117,7 @@ export function validateProfile(data: unknown, path = "profile", knownAlertIds: 
         bad(`${at}.tls.self_signed_pin_sha256`, "must be a SHA-256 fingerprint (64 hex digits, colons allowed)");
       }
     }
-    for (const key of ["credential_env", "credential_env_write"]) {
+    for (const key of ["credential_env", "credential_env_write", "credential_env_hook"]) {
       if (d[key] === undefined) continue;
       const c = d[key] as Record<string, unknown>;
       if (!isObject(c) || typeof c["user"] !== "string" || typeof c["pass"] !== "string") {

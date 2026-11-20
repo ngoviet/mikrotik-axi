@@ -20,6 +20,8 @@ export interface FakeCred {
   user: string;
   pass: string;
   readOnly?: boolean;
+  /** Group có policy `test` (ping/traceroute). */
+  test?: boolean;
 }
 
 export interface FakeRouter {
@@ -60,9 +62,39 @@ export function fakeRouter(
     if (opts.latencyMs) await new Promise((r) => setTimeout(r, opts.latencyMs));
     const account = accounts.find((a) => a.header === req.headers["Authorization"]);
     if (!account) return json(401, { error: 401, message: "Unauthorized" });
+    const path = decodeURIComponent(req.url.pathname).replace(/^\/rest/, "");
+    // `/execute` chạy script với policy của user ⇒ user chỉ đọc vẫn export được (đo 7.25.1).
+    // Script lỗi vẫn HTTP 200, lỗi nằm trong `ret` (bẫy #10). dataset["/export"]: section ⇒ văn bản.
+    if (req.method === "POST" && path === "/execute") {
+      const body = JSON.parse(req.body ?? "{}") as Record<string, string>;
+      const m = /^(.*)\/export terse$/.exec(body["script"] ?? "");
+      const text = m ? (dataset["/export"] as Record<string, string> | undefined)?.[m[1] || "/"] : undefined;
+      return json(200, { ret: text ?? "syntax error (line 1 column 14)" });
+    }
+    // Lệnh chẩn đoán: cần policy `test` (đo 7.25.1: thiếu ⇒ HTTP 500 "not enough permissions (9)").
+    // dataset["/ping"]: interface (hoặc "*") ⇒ "reply" | "timeout"; dataset["/tool/traceroute"]: bản ghi trả nguyên.
+    if (req.method === "POST" && (path === "/ping" || path === "/tool/traceroute")) {
+      if (!account.test) return json(500, { error: 500, message: "Internal Server Error", detail: "not enough permissions (9)" });
+      const body = JSON.parse(req.body ?? "{}") as Record<string, string>;
+      // Đối số theo CLI reference v7 (/tool/ping, /tool/traceroute): tham số lạ (vd routing-table) ⇒ 400.
+      const allowed = DIAGNOSTIC_ARGS[path]!;
+      const unknown = Object.keys(body).find((k) => !allowed.has(k));
+      if (unknown) return rosError(400, `unknown parameter ${unknown}`);
+      if (path === "/tool/traceroute") return json(200, dataset["/tool/traceroute"] ?? []);
+      const plan = (dataset["/ping"] ?? {}) as Record<string, string>;
+      const mode = plan[body["interface"] ?? "*"] ?? plan["*"] ?? "reply";
+      const n = Number(body["count"] ?? 1);
+      return json(
+        200,
+        Array.from({ length: n }, (_, i) =>
+          mode === "reply"
+            ? { seq: String(i), host: body["address"], time: "12ms", sent: String(i + 1), received: String(i + 1), "packet-loss": "0", "min-rtt": "11ms", "avg-rtt": "12ms", "max-rtt": "13ms" }
+            : { seq: String(i), host: body["address"], status: "timeout", sent: String(i + 1), received: "0", "packet-loss": "100" },
+        ),
+      );
+    }
     if (account.readOnly && req.method !== "GET") return json(403, { error: 403, message: "Forbidden", detail: "not enough permissions" });
 
-    const path = decodeURIComponent(req.url.pathname).replace(/^\/rest/, "");
     const forced = opts.fail?.[path];
     if (forced) return forced;
     const query = parseQuery(req.url.search);
@@ -125,6 +157,11 @@ export function fakeRouter(
 
   return { transport, requests, dataset };
 }
+
+const DIAGNOSTIC_ARGS: Record<string, Set<string>> = {
+  "/ping": new Set(["address", "interval", "size", "ttl", "dscp", "do-not-fragment", "src-address", "arp-ping", "count", "nd-ping", "interface", "vrf"]),
+  "/tool/traceroute": new Set(["address", "port", "size", "dscp", "do-not-fragment", "use-dns", "count", "max-hops", "protocol", "src-address", "timeout", "vrf", "interface"]),
+};
 
 // Path đã decode: `.id` hợp lệ chỉ khi URL gửi `*` thô — `%2A` decode ra `*` nên kiểm trên
 // pathname gốc ở test riêng (bẫy #2), không ở đây.

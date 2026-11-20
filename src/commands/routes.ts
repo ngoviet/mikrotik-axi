@@ -22,14 +22,31 @@ export interface DefaultRoute {
    * không active) ⇒ bằng `gateway`.
    */
   via: string;
+  /**
+   * MỌI cổng ra: CLI reference ghi `immediate-gw` kiểu `multi { gw: address }` (ECMP có nhiều next-hop).
+   * `via` chỉ là cái đầu (giữ cho các lệnh cũ); audit dns-open phải xét hết (review vòng 4).
+   */
+  vias: string[];
+  /** Route `blackhole` (CLI reference `/ip/route`: `blackhole switch`): không có cổng ra. */
+  blackhole: boolean;
 }
 
-/** `9.9.9.9%pppoe-out1` → `pppoe-out1`; `pppoe-out2` → `pppoe-out2`; rỗng → gateway. */
+/** `9.9.9.9%pppoe-out1,203.0.113.1%ether2` → `[pppoe-out1, ether2]`; rỗng → `[gateway]`. */
+export function egressesOf(immediateGw: string | undefined, gateway: string): string[] {
+  const hops = (immediateGw ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (!hops.length) return [gateway];
+  return hops.map((v) => {
+    const pct = v.lastIndexOf("%");
+    return pct >= 0 ? v.slice(pct + 1) : v;
+  });
+}
+
+/** `9.9.9.9%pppoe-out1` → `pppoe-out1`; `pppoe-out2` → `pppoe-out2`; rỗng → gateway. Chỉ next-hop đầu. */
 export function egressOf(immediateGw: string | undefined, gateway: string): string {
-  const v = (immediateGw ?? "").split(",")[0]!.trim();
-  if (!v) return gateway;
-  const pct = v.lastIndexOf("%");
-  return pct >= 0 ? v.slice(pct + 1) : v;
+  return egressesOf(immediateGw, gateway)[0]!;
 }
 
 /** Số cổng ra khác nhau của các route active (đếm đường thật, không đếm route). */
@@ -49,7 +66,7 @@ function gatewayLabel(r: DefaultRoute, arrow = " → "): string {
 export async function readDefaultRoutes(client: RosClient): Promise<Map<string, DefaultRoute[]>> {
   const rows = await client.list("/ip/route", {
     query: { "dst-address": "0.0.0.0/0" },
-    proplist: ["dst-address", "routing-table", "gateway", "distance", "active", "dynamic", "disabled", "check-gateway", "immediate-gw"],
+    proplist: ["dst-address", "routing-table", "gateway", "distance", "active", "dynamic", "disabled", "check-gateway", "immediate-gw", "blackhole"],
   });
   const byTable = new Map<string, DefaultRoute[]>();
   for (const r of rows) {
@@ -66,6 +83,8 @@ export async function readDefaultRoutes(client: RosClient): Promise<Map<string, 
       dynamic: toBool(r["dynamic"], "dynamic"),
       checkGateway: Boolean(r["check-gateway"]),
       via: egressOf(r["immediate-gw"], gateway),
+      vias: egressesOf(r["immediate-gw"], gateway),
+      blackhole: toBool(r["blackhole"], "blackhole"),
     });
     byTable.set(table, list);
   }

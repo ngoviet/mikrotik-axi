@@ -55,6 +55,7 @@ export async function runHook(opts: HookOptions): Promise<void> {
       runtime: {
         // Hook luôn chỉ đọc, kể cả nếu sau này home view có thao tác ghi.
         env: { ...opts.env, MIKROTIK_AXI_READ_ONLY: "1" },
+        credentialRole: "hook",
         stderr: { write: () => true },
         timeoutCapMs: HOOK_DEADLINE_MS,
         deadlineAt: Date.now() + Math.min(HOOK_DEADLINE_MS, (opts.budgetMs ?? HOOK_BUDGET_MS) - 300),

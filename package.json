@@ -1,6 +1,6 @@
 {
   "name": "mikrotik-axi",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Inspect and safely operate MikroTik RouterOS v7 devices over REST",
   "type": "module",
   "license": "MIT",
@@ -44,6 +44,7 @@
     "test:watch": "vitest",
     "check": "tsc -p tsconfig.json && eslint . && vitest run",
     "test:live": "vitest run --config vitest.live.config.ts",
+    "test:chr": "vitest run --config vitest.chr.config.ts",
     "build:scripts": "tsup --config tsup.scripts.config.ts",
     "skill:build": "tsup --config tsup.scripts.config.ts && node build/scripts/skill.js",
     "skill:check": "tsup --config tsup.scripts.config.ts && node build/scripts/skill.js --check",
@@ -51,7 +52,7 @@
     "fixtures:synthetic": "node scripts/gen-synthetic-fixtures.mjs test/fixtures",
     "public:check": "node scripts/public-check.mjs",
     "prepublishOnly": "npm run check && npm run skill:check && npm run build",
-    "install:global": "tsup && npm pack --pack-destination build/pack && npm install -g build/pack/mikrotik-axi-0.2.0.tgz"
+    "install:global": "tsup && npm pack --pack-destination build/pack && npm install -g build/pack/mikrotik-axi-0.3.0.tgz"
   },
   "dependencies": {
     "axi-sdk-js": "^0.1.14"
