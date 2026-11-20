@@ -1,0 +1,59 @@
+# CHR: run the suite in test/chr against a real RouterOS CHR (a throwaway VM) — every read command
+# and every WRITE command, pppoe restart / arp flush / dhcp move included, which test/live only runs
+# by hand on a home router. Public repo ⇒ free GitHub runners; Linux runners expose KVM to the job
+# once the runner user may open /dev/kvm (GitHub changelog 2024-04-02), so the CHR boots in ~35 s.
+# Actions pinned by SHA (read 2026-11-21).
+name: CHR
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  chr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CHR_VERSION: 7.25.1
+      # sha256 of chr-7.25.1.img.zip as published in download.mikrotik.com/routeros/7.25.1/chr-7.25.1.img.zip.sha256 (read 2026-11-21)
+      CHR_SHA256: c78e8e24ca78d7f13496140e600702df07fe5c57d1a5d6d025654c8476ed2ed2
+      CHR_DIR: ${{ github.workspace }}/.chr
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      # Same pnpm as packageManager in package.json.
+      - run: npm install -g pnpm@12.11.2
+      - run: pnpm install --frozen-lockfile
+      - name: Let the runner user open /dev/kvm
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Install QEMU
+        run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends qemu-system-x86 qemu-utils
+      - name: Cache the CHR image
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .chr/chr-${{ env.CHR_VERSION }}.img.zip
+          key: chr-${{ env.CHR_VERSION }}-${{ env.CHR_SHA256 }}
+      - name: Boot the CHR
+        run: bash scripts/chr/boot.sh
+      - name: Provision the CHR
+        run: node scripts/chr/provision.mjs "$RUNNER_TEMP/chr"
+      - name: CHR suite
+        env:
+          MIKROTIK_AXI_CHR: "1"
+          MIKROTIK_AXI_PROFILE: ${{ runner.temp }}/chr/profile.json
+          MIKROTIK_AXI_ENV_FILE: ${{ runner.temp }}/chr/creds.env
+          MIKROTIK_AXI_CHR_FIXTURE: ${{ runner.temp }}/chr/fixture.json
+        run: pnpm run test:chr
+      - name: CHR serial console (on failure)
+        if: failure()
+        run: tail -n 120 .chr/serial.log || true

@@ -21,6 +21,8 @@ export interface Runtime {
   hookBin?: string;
   homeDir?: string;
   projectDir?: string;
+  /** "hook" ⇒ dùng `credential_env_hook` nếu profile có (hook SessionStart đặt). */
+  credentialRole?: "hook";
   /** pppoe restart: thời gian chờ phiên chạy lại (test đặt 0). */
   restartWaitMs?: number;
 }
@@ -47,7 +49,11 @@ export function openDevice(flags: GlobalFlags, rt: Runtime, opts: OpenOptions = 
   const env = effectiveEnv(rt.env);
   const loaded = loadProfile(profilePath(flags.profile, env, rt.platform));
   const { name, device } = selectDevice(loaded, flags.device);
-  const names = (opts.write && device.credential_env_write) || device.credential_env || DEFAULT_CREDENTIAL_ENV;
+  const names =
+    (opts.write && device.credential_env_write) ||
+    (rt.credentialRole === "hook" && device.credential_env_hook) ||
+    device.credential_env ||
+    DEFAULT_CREDENTIAL_ENV;
   const creds = readCredentials(env, names, name);
   if (device.url.startsWith("http://")) {
     // Basic auth qua http = mật khẩu base64 trên LAN. Nhắc mỗi lần, ra stderr (stdout dành cho agent).

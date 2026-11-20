@@ -5,7 +5,18 @@ import { toBool, type RosRecord } from "./normalize.js";
 import { nodeTransport, TransportError, type HttpRequest, type HttpResponse, type Transport } from "./transport.js";
 import { validateWrite, type RosBody } from "./validate.js";
 
-export const MAX_CONCURRENT = 6;
+/**
+ * RouterOS chạy TUẦN TỰ các request REST của cùng một user (manual chính thức, mục "Send parallel
+ * requests from separate users"). Đo CCR2004 7.25.1 (2026-11-21): home view ở mức 1 / 2 / 6 cho
+ * cùng tổng thời gian; ở 6 từng request phình lên 1–1,4 s vì xếp hàng trong router. Mức 2 giữ một
+ * request chờ sẵn (che độ trễ mạng) mà không dồn phiên lên dịch vụ www (max-sessions mặc định 20).
+ */
+export const MAX_CONCURRENT = 2;
+export type DiagnosticCommand = "/ping" | "/tool/traceroute";
+const DIAGNOSTIC_COMMANDS = new Set<string>(["/ping", "/tool/traceroute"]);
+
+/** REST cắt mọi request ở 60 s ("Session closed") — chờ vừa quá mức đó để thấy lỗi của router. */
+export const EXPORT_TIMEOUT_MS = 61_000;
 
 export interface DeviceConn {
   /** Tên thiết bị trong profile — dùng trong thông điệp lỗi. */
@@ -123,8 +134,8 @@ export class RosClient {
     }
   }
 
-  // Dịch vụ www của RouterOS mặc định max-sessions=20; home view đọc ~20 menu cùng lúc.
-  // Giới hạn số request đồng thời để không chạm trần đó (và không chiếm hết phiên của Winbox/web).
+  // Giới hạn số request đồng thời: router xử lý tuần tự theo user nên thêm song song chỉ dời hàng
+  // đợi sang router (xem MAX_CONCURRENT) và chiếm phiên www của Winbox/web.
   private active = 0;
   private get maxConcurrent(): number {
     const n = Number(this.env["MIKROTIK_AXI_CONCURRENCY"]);
@@ -248,6 +259,55 @@ export class RosClient {
       ...(Object.keys(query).length ? { query } : {}),
       ...(opts.timeoutMs ? { timeoutMs: opts.timeoutMs } : {}),
     };
+  }
+
+  /**
+   * Export cấu hình (`<section>/export terse`) qua `POST /execute` + `as-string` — đường DUY NHẤT
+   * chạy được với user chỉ đọc (đo CCR2004 7.25.1, 2026-11-21: `POST /rest/export` trả `[]` sau
+   * 8,4 s; `/execute as-string` trả nguyên văn trong 0,15–0,7 s).
+   * `/execute` là cửa chạy script tuỳ ý (§3.2 cấm cho agent) ⇒ script do TOOL dựng: section phải là
+   * menu hợp lệ (chỉ [a-z0-9-/]) và đuôi cố định `/export terse`. Script chạy với policy của chính
+   * user (axi-ro không có `write`/`sensitive` ⇒ không ghi được gì, mật khẩu bị router ẩn).
+   * Bẫy #10: script lỗi vẫn trả HTTP 200, lỗi nằm trong `ret` ("syntax error (line 1 column 14)")
+   * ⇒ chỉ nhận output mở đầu bằng dòng `# … by RouterOS …`.
+   */
+  async exportConfig(section: string): Promise<string> {
+    if (section !== "/") assertMenu(section);
+    const script = `${section === "/" ? "" : section}/export terse`;
+    const res = (await this.call("POST", "/execute", { body: { script, "as-string": "" }, timeoutMs: EXPORT_TIMEOUT_MS })) as
+      | { ret?: unknown }
+      | undefined;
+    const text = typeof res?.ret === "string" ? res.ret : "";
+    if (!/^# .* by RouterOS /.test(text)) {
+      fail(`export of ${section} failed: ${redact(text.split("\n")[0] ?? "", 120) || "empty reply"}`, "ROS_ERROR", [
+        "Check the section path (menu as in `/ip/firewall`, not `/ip firewall`)",
+      ]);
+    }
+    return text;
+  }
+
+  /**
+   * Lệnh chẩn đoán chạy TRÊN router (POST, không đổi cấu hình). Danh sách trắng: chỉ ping và
+   * traceroute — không có POST tuỳ ý. Cần policy `test` cho user: đo CCR2004 7.25.1 (2026-11-21),
+   * `axi-ro` (read,api,rest-api) nhận HTTP 500 `not enough permissions (9)` ⇒ dịch thành AUTH_ERROR
+   * kèm cách sửa. Lệnh không có `count` chạy mãi ⇒ REST cắt ở 60 s ("Session closed"): người gọi
+   * phải truyền count.
+   */
+  async diagnose(command: DiagnosticCommand, body: Record<string, string>, timeoutMs: number): Promise<RosRecord[]> {
+    if (!DIAGNOSTIC_COMMANDS.has(command)) throw new Error(`not a diagnostic command: ${command}`);
+    if (body["count"] === undefined) throw new Error(`${command} needs count (REST ends endless commands at 60 s)`);
+    try {
+      const data = await this.call("POST", command, { body, timeoutMs });
+      return Array.isArray(data) ? (data as RosRecord[]) : data ? [data as RosRecord] : [];
+    } catch (e) {
+      if (e instanceof Error && /not enough permissions/i.test(e.message)) {
+        fail(`${this.conn.user} may not run ${command} on ${this.conn.name}: the user group lacks the \`test\` policy`, "AUTH_ERROR", [
+          "Add `test` to the read-only group on the router, e.g. /user group set axi-read policy=read,api,rest-api,test",
+          "`test` also allows fetch, email and bandwidth-test (manual: /user group): weigh that before granting it to a user agents share",
+        ]);
+      }
+      throw e;
+    }
   }
 
   // ---- ghi (dùng bởi lớp write/ ở M3; ở đây chỉ mã hoá bẫy + chốt chặn cuối) ----

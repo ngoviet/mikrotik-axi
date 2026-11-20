@@ -1,10 +1,13 @@
+import { AUDIT_HELP, auditCommand } from "./commands/audit.js";
 import { DEVICES_HELP, devicesCommand } from "./commands/devices.js";
 import { DHCP_HELP, dhcpCommand } from "./commands/dhcp.js";
+import { EXPORT_HELP, exportCommand } from "./commands/export.js";
 import { FW_HELP, fwCommand } from "./commands/fw.js";
 import { HEALTH_HELP, healthCommand } from "./commands/health.js";
 import { HOME_HELP } from "./commands/home.js";
 import { IFACE_HELP, ifaceCommand, VLANS_HELP, vlansCommand } from "./commands/interfaces.js";
 import { LOG_HELP, logCommand } from "./commands/log.js";
+import { PING_HELP, pingCommand, TRACEROUTE_HELP, tracerouteCommand } from "./commands/ping.js";
 import { ROUTES_HELP, routesCommand } from "./commands/routes.js";
 import { SERVICES_HELP, servicesCommand } from "./commands/services.js";
 import { SETUP_HELP, setupCommand } from "./commands/setup.js";
@@ -44,7 +47,11 @@ export const COMMANDS: Record<string, CommandSpec> = {
   iface: { usage: "iface [--type t]", summary: "interfaces, running state, byte counters", help: IFACE_HELP, run: ifaceCommand },
   fw: { usage: "fw <filter|nat|mangle|raw> [check | enable|disable <.id>]", summary: "firewall rules in order; mangle MSS/mark audit; WRITE: enable/disable a rule", help: FW_HELP, run: fwCommand },
   services: { usage: "services", summary: "management services and their real ACL (available-from)", help: SERVICES_HELP, run: servicesCommand },
+  audit: { usage: "audit", summary: "security audit: plaintext services, admin user, PPTP, open DNS/SNMP, UPnP, RouterBOOT…", help: AUDIT_HELP, run: auditCommand },
+  ping: { usage: "ping <address> [--interface i | --each-wan]", summary: "ping FROM the router; --each-wan finds PPPoE sessions that run but lost their ISP route (needs policy test)", help: PING_HELP, run: pingCommand },
+  traceroute: { usage: "traceroute <address> [--interface i]", summary: "traceroute FROM the router (needs policy test)", help: TRACEROUTE_HELP, run: tracerouteCommand },
   log: { usage: "log [--topic t] [--since 1h] [--grep re]", summary: "recent router log", help: LOG_HELP, run: logCommand },
+  export: { usage: "export [diff] [--section <menu>]", summary: "save the config to a local .rsc (path + sha256 only); `diff` = what changed since the last save", help: EXPORT_HELP, run: exportCommand },
   pppoe: { usage: "pppoe restart <name>", summary: "WRITE: restart one PPPoE session (dry-run unless --confirm)", help: PPPOE_HELP, run: pppoeCommand },
   arp: { usage: "arp flush <address>", summary: "WRITE: drop a dynamic ARP entry (dry-run unless --confirm)", help: ARP_HELP, run: arpCommand },
   "addr-list": { usage: "addr-list add|remove <list> <address>", summary: "WRITE: one firewall address-list entry (dry-run unless --confirm)", help: ADDR_LIST_HELP, run: addrListCommand },

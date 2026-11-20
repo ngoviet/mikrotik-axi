@@ -37,7 +37,11 @@ Run `npx -y mikrotik-axi` with no arguments. It prints the home view:
 | `npx -y mikrotik-axi iface [--type t]` | interfaces, running state, byte counters |
 | `npx -y mikrotik-axi fw <filter\|nat\|mangle\|raw> [check \| enable\|disable <.id>]` | firewall rules in order; mangle MSS/mark audit; WRITE: enable/disable a rule |
 | `npx -y mikrotik-axi services` | management services and their real ACL (available-from) |
+| `npx -y mikrotik-axi audit` | security audit: plaintext services, admin user, PPTP, open DNS/SNMP, UPnP, RouterBOOT… |
+| `npx -y mikrotik-axi ping <address> [--interface i \| --each-wan]` | ping FROM the router; --each-wan finds PPPoE sessions that run but lost their ISP route (needs policy test) |
+| `npx -y mikrotik-axi traceroute <address> [--interface i]` | traceroute FROM the router (needs policy test) |
 | `npx -y mikrotik-axi log [--topic t] [--since 1h] [--grep re]` | recent router log |
+| `npx -y mikrotik-axi export [diff] [--section <menu>]` | save the config to a local .rsc (path + sha256 only); `diff` = what changed since the last save |
 | `npx -y mikrotik-axi pppoe restart <name>` | WRITE: restart one PPPoE session (dry-run unless --confirm) |
 | `npx -y mikrotik-axi arp flush <address>` | WRITE: drop a dynamic ARP entry (dry-run unless --confirm) |
 | `npx -y mikrotik-axi addr-list add\|remove <list> <address>` | WRITE: one firewall address-list entry (dry-run unless --confirm) |

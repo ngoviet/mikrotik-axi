@@ -59,6 +59,11 @@ Do **not** use `admin`. Create a dedicated user limited to your workstation's ad
 /user add name=axi-ro group=axi-read address=192.168.88.10/32 password=<long random>
 ```
 
+`ping` and `traceroute` also need the `test` policy (`policy=read,api,rest-api,test`); without it
+those two commands say so and exit 1. Know what you grant: per the RouterOS manual, `test` covers
+ping, traceroute, bandwidth-test, wireless scan, **fetch** and **email**, so a user with it can make
+the router download files or send mail. It does not grant `write`.
+
 Check the policy names against `/user group print` on your version: a wrong name means
 REST answers 401/403. For write commands, add a second user whose group also has `write`. Keep `policy`,
 `password`, `sensitive`, `ftp` and `reboot` out of it.
@@ -104,6 +109,9 @@ The profile fields:
 - `credential_env_write` (optional) names the variables of a user **with** the `write` policy. Only
   write commands use it; read commands and the session hook keep using `credential_env`, so the
   write-capable password is never loaded for a read.
+- `credential_env_hook` (optional) names the variables of a second **read-only** user for the
+  session hook. RouterOS runs the REST requests of one user one at a time, so hooks of several
+  agent sessions starting together, and your own commands, would otherwise queue behind each other.
 
 ### 3. Credentials
 
@@ -148,7 +156,19 @@ help[2]: Run `mikrotik-axi fw mangle check` to audit rule order,Run `mikrotik-ax
 | `fw <filter\|nat\|mangle\|raw> [--chain c]` | rules in processing order, per-chain counts, zero-hit rules |
 | `fw mangle check` | `change-mss` after the first `accept`, MSS-raising rules, duplicate marks |
 | `services` | management services and their real ACL (`available-from`) |
+| `audit` | security judgement: default `admin`, write users without address limit, telnet/ftp/api/www in clear text, PPTP or L2TP without IPsec, weak SSH, open DNS resolver, UPnP, SOCKS/proxy, SNMP `public`, neighbor discovery on all interfaces, RoMON, RouterBOOT behind RouterOS |
 | `log [--topic t] [--since 1h] [--grep re]` | recent log; `--since` uses the router's clock |
+| `ping <address> [--interface i] [--src-address a] [--count n]` | ping **from the router**, through the path you choose (RouterOS ping has no routing-table argument: to test a policy table, use a `--src-address` a routing rule sends there) |
+| `ping <address> --each-wan` | one ping through every running PPPoE session; lists the sessions that run but get no reply (ISP route lost) |
+| `traceroute <address> [--interface i]` | traceroute from the router (not yet verified on a live router) |
+| `export [--section /ip/firewall]` | saves `/export terse` to a local `.rsc`; prints only path, sha256, line count and whether it changed since the last save |
+| `export diff [--section …] [--against f]` | what changed since the last saved export: +/- lines per menu, menus whose order changed. Code-bearing fields (`source`, any `*-script`, any `on-*`) and anything that looks like script print as length (+ hash) only; `cmd`/`entrypoint`/`value` as length; secret-like keys (`password`, `secret(s)`, `key`, `psk`, `pin`, `token`…) as `<redacted>`; lines that do not parse are never printed; other values get best-effort secret masking |
+
+`export` works with the read-only user. RouterOS hides password fields from a user without the
+`sensitive` policy, but script and scheduler sources are exported verbatim and can hold secrets, so
+treat saved files as private. RouterOS keeps no history of its configuration, so a saved export is the only
+way to see what someone changed in WinBox. A whole-configuration export needs RouterOS 7.25 or
+later (earlier versions can run out of memory on a large output); use `--section` before that.
 
 Every command accepts `--device`, `--fields a,b`, `--full` and `--help`. Unknown flags exit 2
 and list the valid ones. Errors go to stdout as `error:` / `code:` / `help:`.
@@ -174,7 +194,8 @@ Every write goes through the same steps:
    and print `mikrotik-axi revert <snapshot> --confirm`.
 
 A target already in the wanted state gives `result: no-op`. `MIKROTIK_AXI_READ_ONLY=1`
-refuses every write. No command runs arbitrary RouterOS scripts.
+refuses every write. No command runs arbitrary RouterOS scripts: `export` runs a script the tool
+builds itself (`<menu>/export terse`, menu checked against `[a-z0-9-/]`).
 
 ## Agent integration
 
@@ -201,6 +222,17 @@ pnpm fixtures:record --device core          # record sanitized, anonymized fixtu
 ```
 
 Tests run against a fake RouterOS REST server built from the fixtures in `test/fixtures/`.
+
+The `CHR` workflow also runs `test/chr` against a real RouterOS CHR in a throwaway QEMU VM on every
+pull request: every read command and every write command, including `pppoe restart`, `arp flush` and
+`dhcp move`. To run it yourself on Linux with QEMU (and KVM for speed):
+
+```sh
+CHR_SHA256=<sha256 of chr-7.25.1.img.zip> bash scripts/chr/boot.sh
+node scripts/chr/provision.mjs /tmp/chr
+MIKROTIK_AXI_CHR=1 MIKROTIK_AXI_PROFILE=/tmp/chr/profile.json MIKROTIK_AXI_ENV_FILE=/tmp/chr/creds.env \
+  MIKROTIK_AXI_CHR_FIXTURE=/tmp/chr/fixture.json pnpm test:chr
+```
 
 <!-- support:start -->
 ## Support the project

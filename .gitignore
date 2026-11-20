@@ -22,3 +22,5 @@ bench/raw/
 
 # Lavish review pages (local only)
 .lavish/
+.design-kit/
+.chr/
