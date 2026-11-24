@@ -1,0 +1,30 @@
+# Phát hành khi đẩy tag vX.Y.Z: tag phải khớp "version" trong package.json, rồi tạo release trên GitHub.
+# Kiểm thử đã chạy ở ci.yml trên main nên không lặp lại ở đây. Ghi chú tự sinh từ commit và PR; muốn ghi chú tự viết thì sửa
+# release sau khi tạo (gh release edit).
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tag khớp phiên bản trong package.json
+        run: |
+          TAG="${GITHUB_REF#refs/tags/v}"
+          PKG="$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$PKG" ]; then echo "Tag v$TAG khác package.json $PKG"; exit 1; fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
